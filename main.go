@@ -1,6 +1,7 @@
 package main
 
 import (
+	"encoding/json"
 	"fmt"
 	"io"
 	"net/http"
@@ -13,6 +14,36 @@ import (
 type Config struct {
 	APIUrl string
 	APIkey string
+}
+
+type Response struct {
+	Data []Day `json:"data"`
+}
+
+type Project struct {
+	TotalSeconds int     `json:"total_seconds"`
+	ProjectName  string  `json:"name"`
+	Percent      float64 `json:"percent"`
+}
+
+type DailyStat struct {
+	Date         string
+	TotalSeconds int
+}
+
+type Day struct {
+	GrandTotal struct {
+		TotalSeconds int `json:"total_seconds"`
+		Hours        int `json:"hours"`
+		Minutes      int `json:"minutes"`
+		Seconds      int `json:"seconds"`
+	} `json:"grand_total"`
+
+	Projects []Project `json:"projects"`
+
+	Range struct {
+		Date string `json:"date"`
+	} `json:"range"`
 }
 
 func logError(err error) bool {
@@ -66,7 +97,7 @@ func main() {
 		value := strings.TrimSpace(parts[1])
 
 		if key == "api_url" {
-			config.APIUrl = value + "/users/current/summaries?start=2026-08-18&end=2026-08-19"
+			config.APIUrl = value + "/users/current/summaries?start=2026-08-01&end=2026-08-18"
 		}
 
 		if key == "api_key" {
@@ -84,9 +115,25 @@ func main() {
 		x, err := io.ReadAll(httpResponse.Body)
 		if !logError(err) {
 			return
-		} else {
-			fmt.Println("Body: ", string(x))
 		}
+		response := Response{}
+		err = json.Unmarshal(x, &response)
+		if !logError(err) {
+			return
+		}
+
+		var dailyStats []DailyStat
+
+		for _, day := range response.Data {
+			dailyStats = append(dailyStats, DailyStat{
+				Date:         day.Range.Date,
+				TotalSeconds: day.GrandTotal.TotalSeconds,
+			})
+			for _, stat := range dailyStats {
+				fmt.Println(stat.Date, stat.TotalSeconds/3600, "hours")
+			}
+		}
+
 	}
 
 }
