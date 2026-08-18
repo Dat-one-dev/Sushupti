@@ -28,12 +28,16 @@ func sendRequest(config Config) (*http.Response, error) {
 	if !logError(err) {
 		return nil, err
 	}
+
+	packet.Header.Set("Authorization", "Bearer "+config.APIkey)
+
 	packetClient := http.Client{}
 	recievedReq, err := packetClient.Do(packet)
 	if !logError(err) {
 		return nil, err
 	}
-	return recievedReq, err
+
+	return recievedReq, nil
 }
 
 func main() {
