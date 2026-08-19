@@ -62,16 +62,16 @@ func graph(dailyStats []DailyStat) {
 func exportGraph(dailyStat []DailyStat, filename string) error {
 	//VARIABLES
 	width := 1000
-	height := 600
 	barX := 202
 	barWidth := 700
 	barHeight := 20
 	gap := 10
 	left := 200
 	right := 900
-	top := 50
-	bottom := 550
+	top := 120
+	bottom := top + len(dailyStat)*(barHeight+gap)
 	maxSec := 0
+	height := bottom + 70
 
 	//font
 	fontBytes, err := os.ReadFile("assets/font.ttf")
@@ -147,7 +147,7 @@ func exportGraph(dailyStat []DailyStat, filename string) error {
 		}
 
 		currentWidth := stat.TotalSeconds * barWidth / maxSec
-		y := 50 + i*(barHeight+gap)
+		y := top + i*(barHeight+gap)
 		drawText(
 			img,
 			stat.Date,
