@@ -2,76 +2,21 @@ package main
 
 import (
 	"encoding/json"
+	"flag"
 	"fmt"
 	"io"
-	"net/http"
 	"os"
 	"os/user"
 	"path/filepath"
 	"strings"
 )
 
-type Config struct {
-	APIUrl string
-	APIkey string
-}
-
-type Response struct {
-	Data []Day `json:"data"`
-}
-
-type Project struct {
-	TotalSeconds int     `json:"total_seconds"`
-	ProjectName  string  `json:"name"`
-	Percent      float64 `json:"percent"`
-}
-
-type DailyStat struct {
-	Date         string
-	TotalSeconds int
-}
-
-type Day struct {
-	GrandTotal struct {
-		TotalSeconds int `json:"total_seconds"`
-		Hours        int `json:"hours"`
-		Minutes      int `json:"minutes"`
-		Seconds      int `json:"seconds"`
-	} `json:"grand_total"`
-
-	Projects []Project `json:"projects"`
-
-	Range struct {
-		Date string `json:"date"`
-	} `json:"range"`
-}
-
-func logError(err error) bool {
-	if err != nil {
-		fmt.Println("Error:", err)
-		return false
-	}
-	return true
-}
-
-func sendRequest(config Config) (*http.Response, error) {
-	packet, err := http.NewRequest(http.MethodGet, config.APIUrl, nil)
-	if !logError(err) {
-		return nil, err
-	}
-
-	packet.Header.Set("Authorization", "Bearer "+config.APIkey)
-
-	packetClient := http.Client{}
-	recievedReq, err := packetClient.Do(packet)
-	if !logError(err) {
-		return nil, err
-	}
-
-	return recievedReq, nil
-}
-
 func main() {
+	startDate := flag.String("s", "", "start date")
+	endDate := flag.String("e", "", "end date")
+	flag.Parse()
+	fmt.Println("Start:", *startDate)
+	fmt.Println("End:", *endDate)
 	config := Config{}
 	user, err := user.Current()
 	if !logError(err) {
@@ -129,10 +74,9 @@ func main() {
 				Date:         day.Range.Date,
 				TotalSeconds: day.GrandTotal.TotalSeconds,
 			})
-			for _, stat := range dailyStats {
-				fmt.Println(stat.Date, stat.TotalSeconds/3600, "hours")
-			}
 		}
+
+		graph(dailyStats)
 
 	}
 
