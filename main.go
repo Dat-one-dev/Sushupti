@@ -15,6 +15,7 @@ import (
 func main() {
 	startDate := flag.String("s", "", "start date")
 	endDate := flag.String("e", "", "end date")
+	darkBool := flag.Bool("dark", false, "dark mode")
 	flag.Parse()
 	if *startDate == "" && *endDate == "" {
 		today := time.Now()
@@ -92,7 +93,7 @@ func main() {
 		}
 
 		graph(dailyStats)
-		err = exportGraph(dailyStats, "sushupti.png")
+		err = exportGraph(dailyStats, "sushupti.png", *darkBool)
 		if !logError(err) {
 			return
 		}

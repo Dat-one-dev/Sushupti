@@ -13,7 +13,7 @@ import (
 	"golang.org/x/image/math/fixed"
 )
 
-func drawText(img *image.RGBA, text string, x, y, size float64, fontData *opentype.Font) {
+func drawText(img *image.RGBA, text string, x, y, size float64, fontData *opentype.Font, textColor color.Color) {
 
 	face, err := opentype.NewFace(fontData, &opentype.FaceOptions{
 		Size:    size,
@@ -27,7 +27,7 @@ func drawText(img *image.RGBA, text string, x, y, size float64, fontData *openty
 
 	d := &font.Drawer{
 		Dst:  img,
-		Src:  image.NewUniform(color.Black),
+		Src:  image.NewUniform(textColor),
 		Face: face,
 		Dot:  fixed.P(int(x), int(y)),
 	}
@@ -59,7 +59,16 @@ func graph(dailyStats []DailyStat) {
 	}
 }
 
-func exportGraph(dailyStat []DailyStat, filename string) error {
+func exportGraph(dailyStat []DailyStat, filename string, darkMode bool) error {
+	//Dark Mode
+	bgColor := color.White
+	textColor := color.Black
+
+	if darkMode {
+		bgColor = color.Black
+		textColor = color.White
+	}
+
 	//VARIABLES
 	width := 1000
 	barX := 202
@@ -97,10 +106,10 @@ func exportGraph(dailyStat []DailyStat, filename string) error {
 	//Image
 	img := image.NewRGBA(image.Rect(0, 0, width, height))
 	draw.Draw(img, img.Bounds(), &image.Uniform{
-		C: image.White,
+		C: bgColor,
 	}, image.Point{}, draw.Src)
-	drawText(img, "SushupTi", 500-70, 48, 48, fontData2)
-	drawText(img, "Daily Coding Activity", 400, 80, 24, fontData)
+	drawText(img, "SushupTi", 500-70, 48, 48, fontData2, textColor)
+	drawText(img, "Daily Coding Activity", 400, 80, 24, fontData, textColor)
 
 	for _, stat := range dailyStat {
 		if stat.TotalSeconds > maxSec {
@@ -111,7 +120,7 @@ func exportGraph(dailyStat []DailyStat, filename string) error {
 	draw.Draw(
 		img,
 		image.Rect(left, top, left+2, bottom),
-		&image.Uniform{C: color.Black},
+		&image.Uniform{C: textColor},
 		image.Point{},
 		draw.Src,
 	)
@@ -119,7 +128,7 @@ func exportGraph(dailyStat []DailyStat, filename string) error {
 	draw.Draw(
 		img,
 		image.Rect(left, bottom-2, right, bottom),
-		&image.Uniform{C: color.Black},
+		&image.Uniform{C: textColor},
 		image.Point{},
 		draw.Src,
 	)
@@ -134,11 +143,12 @@ func exportGraph(dailyStat []DailyStat, filename string) error {
 
 		drawText(
 			img,
-			fmt.Sprintf("%dh", hour),
+			fmt.Sprintf("%d Hour", hour),
 			float64(x-7),
 			float64(bottom+20),
 			12,
 			fontData,
+			textColor,
 		)
 	}
 	for i, stat := range dailyStat {
@@ -155,6 +165,7 @@ func exportGraph(dailyStat []DailyStat, filename string) error {
 			float64(y+15),
 			12,
 			fontData,
+			textColor,
 		)
 		draw.Draw(
 			img,
@@ -165,7 +176,7 @@ func exportGraph(dailyStat []DailyStat, filename string) error {
 				y+barHeight+1,
 			),
 			&image.Uniform{
-				C: color.Black,
+				C: textColor,
 			},
 			image.Point{},
 			draw.Src,
