@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"net/http"
+	"time"
 )
 
 func logError(err error) bool {
@@ -31,5 +32,10 @@ func sendRequest(config Config) (*http.Response, error) {
 }
 
 func parseTime(date string) (string, error) {
-	
+	parsedTime, err := time.Parse("02-01-06", date)
+	if err != nil {
+		return "", err
+	}
+
+	return parsedTime.Format("2006-01-02"), nil
 }

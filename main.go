@@ -9,14 +9,29 @@ import (
 	"os/user"
 	"path/filepath"
 	"strings"
+	"time"
 )
 
 func main() {
 	startDate := flag.String("s", "", "start date")
 	endDate := flag.String("e", "", "end date")
 	flag.Parse()
-	fmt.Println("Start:", *startDate)
-	fmt.Println("End:", *endDate)
+	if *startDate == "" && *endDate == "" {
+		today := time.Now()
+		*endDate = today.Format("02-01-06")
+		*startDate = today.AddDate(0, 0, -10).Format("02-01-06")
+	}
+	parsed, err := parseTime(*startDate)
+	if !logError(err) {
+		return
+	}
+	parsedE, err := parseTime(*endDate)
+	if !logError(err) {
+		return
+	}
+
+	fmt.Println("Start:", *startDate, "VS:", parsed)
+	fmt.Println("End:", *endDate, "VS: ", parsedE)
 	config := Config{}
 	user, err := user.Current()
 	if !logError(err) {
@@ -42,7 +57,7 @@ func main() {
 		value := strings.TrimSpace(parts[1])
 
 		if key == "api_url" {
-			config.APIUrl = value + "/users/current/summaries?start=2026-08-01&end=2026-08-18"
+			config.APIUrl = fmt.Sprintf("%s/users/current/summaries?start=%s&end=%s", value, parsed, parsedE)
 		}
 
 		if key == "api_key" {
