@@ -92,6 +92,12 @@ func main() {
 		}
 
 		graph(dailyStats)
+		err = exportGraph(dailyStats, "sushupti.png")
+		if !logError(err) {
+			return
+		}
+
+		fmt.Println("Graph exported to sushupti.png")
 
 	}
 
