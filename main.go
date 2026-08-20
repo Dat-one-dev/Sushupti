@@ -67,6 +67,7 @@ func main() {
 			config.APIkey = value
 		}
 	}
+	var dailyStats []DailyStat
 
 	httpResponse, err := sendRequest(config)
 	if !logError(err) {
@@ -85,8 +86,6 @@ func main() {
 			return
 		}
 
-		var dailyStats []DailyStat
-
 		for _, day := range response.Data {
 			dailyStats = append(dailyStats, DailyStat{
 				Date:         day.Range.Date,
@@ -104,7 +103,9 @@ func main() {
 
 	}
 
-	p := tea.NewProgram(model{})
+	p := tea.NewProgram(model{
+		daily: dailyStats,
+	})
 	if _, err := p.Run(); !logError(err) {
 		return
 	}
