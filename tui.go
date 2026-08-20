@@ -1,8 +1,9 @@
 package main
 
 import (
+	"strings"
+
 	tea "github.com/charmbracelet/bubbletea"
-	"github.com/charmbracelet/lipgloss"
 )
 
 type model struct {
@@ -31,9 +32,26 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 }
 
 func (m model) View() string {
-	header := " Sushupti "
-	top := lipgloss.NewStyle().Bold(true).Render(header)
-	box := lipgloss.NewStyle().Width(m.w-2).Height(m.h-2).Border(lipgloss.DoubleBorder()).Padding(1, 2).Render(top)
+	if m.w < 20 || m.h < 5 {
+		return ""
+	}
+	header := " SUSHUPTI "
 
-	return box
+	s := "╔"
+	s += strings.Repeat("═", (m.w-len(header)-2)/2)
+	s += header
+	s += strings.Repeat("═", (m.w-len(header)-2)/2)
+	s += "╗\n"
+
+	for i := 0; i < m.h-2; i++ {
+		s += "║"
+		s += strings.Repeat(" ", m.w-2)
+		s += "║\n"
+	}
+
+	s += "╚"
+	s += strings.Repeat("═", m.w-2)
+	s += "╝"
+
+	return s
 }
