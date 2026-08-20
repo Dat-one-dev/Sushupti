@@ -31,8 +31,9 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 }
 
 func (m model) View() string {
-
-	box := lipgloss.NewStyle().Width(m.w-2).Height(m.h-2).Border(lipgloss.DoubleBorder()).Padding(1, 2).Render("Sushupti")
+	header := " Sushupti "
+	top := lipgloss.NewStyle().Bold(true).Render(header)
+	box := lipgloss.NewStyle().Width(m.w-2).Height(m.h-2).Border(lipgloss.DoubleBorder()).Padding(1, 2).Render(top)
 
 	return box
 }
