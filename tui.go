@@ -24,11 +24,15 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			return m, tea.Quit
 		}
 		if key.String() == "down" || key.String() == "j" {
-			m.selected++
+			if m.selected < 2 {
+				m.selected++
+			}
 		}
 
 		if key.String() == "up" || key.String() == "k" {
-			m.selected--
+			if m.selected > 0 {
+				m.selected--
+			}
 		}
 	}
 
