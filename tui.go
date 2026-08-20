@@ -48,7 +48,15 @@ func (m model) View() string {
 
 	for i := 0; i < m.h-2; i++ {
 		s += "║"
-		s += strings.Repeat(" ", 20)
+
+		if i == 0 {
+			s += "┌──────────────────┐"
+		} else if i == m.h-3 {
+			s += "└──────────────────┘"
+		} else {
+			s += "│                  │"
+		}
+
 		s += "│"
 		s += strings.Repeat(" ", m.w-23)
 		s += "║\n"
