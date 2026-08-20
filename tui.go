@@ -58,8 +58,10 @@ func (m model) View() string {
 			s += "│       " + menu + "       │"
 		} else if i == 2 {
 			s += "│   > Overview     │"
-		} else {
-			s += "│                  │"
+		} else if i == 3 {
+			s += "│     Projects     │"
+		} else if i == 4 {
+			s += "│     Activity     │"
 		}
 
 		s += "│"
