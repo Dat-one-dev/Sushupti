@@ -8,8 +8,9 @@ import (
 )
 
 type model struct {
-	w int
-	h int
+	w        int
+	h        int
+	selected int
 }
 
 func (m model) Init() tea.Cmd {
@@ -21,6 +22,13 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	if key, ok := msg.(tea.KeyMsg); ok {
 		if key.String() == "q" || key.String() == "ctrl+c" {
 			return m, tea.Quit
+		}
+		if key.String() == "down" || key.String() == "j" {
+			m.selected++
+		}
+
+		if key.String() == "up" || key.String() == "k" {
+			m.selected--
 		}
 	}
 
@@ -57,11 +65,25 @@ func (m model) View() string {
 		} else if i == 1 {
 			s += "│       " + menu + "       │"
 		} else if i == 2 {
-			s += "│   > Overview     │"
+			if m.selected == 0 {
+				s += "│   > Overview     │"
+			} else {
+				s += "│     Overview     │"
+			}
 		} else if i == 3 {
-			s += "│     Projects     │"
+			if m.selected == 1 {
+				s += "│   > Projects     │"
+			} else {
+				s += "│     Projects     │"
+			}
 		} else if i == 4 {
-			s += "│     Activity     │"
+			if m.selected == 2 {
+				s += "│   > Activity     │"
+			} else {
+				s += "│     Activity     │"
+			}
+		} else {
+			s += "│                  │"
 		}
 
 		s += "│"
