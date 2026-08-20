@@ -52,14 +52,19 @@ func (m model) View() string {
 	}
 	header := " SUSHUPTI "
 	header = lipgloss.NewStyle().Foreground(lipgloss.Color("4")).Render(header)
-	menu := lipgloss.NewStyle().Foreground(lipgloss.Color("1")).Render("MENU")
-	selected := lipgloss.NewStyle().Foreground(lipgloss.Color("6"))
+	menu := lipgloss.NewStyle().
+		Bold(true).
+		Foreground(lipgloss.Color("4")).
+		Render("MENU")
+	selected := lipgloss.NewStyle().
+		Bold(true).
+		Foreground(lipgloss.Color("6"))
 
-	s := "╔"
-	s += strings.Repeat("═", (m.w-len(" SUSHUPTI ")-2)/2)
+	s := "╭"
+	s += strings.Repeat("─", (m.w-len(" SUSHUPTI ")-2)/2)
 	s += header
-	s += strings.Repeat("═", (m.w-len(" SUSHUPTI ")-2)/2)
-	s += "╗\n"
+	s += strings.Repeat("─", (m.w-len(" SUSHUPTI ")-2)/2)
+	s += "╮\n"
 
 	//doing ts again for 6-7th time instead of making a better way to do it
 	maxSec := 0
@@ -71,7 +76,12 @@ func (m model) View() string {
 	}
 
 	//right
-	right := "  DAILY ACTIVITY\n\n"
+	total := 0
+	for _, day := range m.daily {
+		total += day.TotalSeconds
+	}
+	right := "  DAILY ACTIVITY\n"
+	right += fmt.Sprintf("  Total: %dh %02dm\n\n", total/3600, (total%3600)/60)
 
 	for _, day := range m.daily {
 		bar := 0
@@ -94,7 +104,7 @@ func (m model) View() string {
 	rightLines := strings.Split(right, "\n")
 
 	for i := 0; i < m.h-2; i++ {
-		s += "║"
+		s += "│"
 
 		if i == 0 {
 			s += "┌──────────────────┐"
@@ -104,19 +114,19 @@ func (m model) View() string {
 			s += "│       " + menu + "       │"
 		} else if i == 2 {
 			if m.selected == 0 {
-				s += "│   " + selected.Render("> Overview") + "     │"
+				s += "│   " + selected.Render("▸  Overview") + "    │"
 			} else {
 				s += "│     Overview     │"
 			}
 		} else if i == 3 {
 			if m.selected == 1 {
-				s += "│   " + selected.Render("> Projects") + "     │"
+				s += "│   " + selected.Render("▸  Projects") + "    │"
 			} else {
 				s += "│     Projects     │"
 			}
 		} else if i == 4 {
 			if m.selected == 2 {
-				s += "│   " + selected.Render("> Activity") + "     │"
+				s += "│   " + selected.Render("▸  Activity") + "    │"
 			} else {
 				s += "│     Activity     │"
 			}
@@ -138,12 +148,12 @@ func (m model) View() string {
 			s += strings.Repeat(" ", m.w-23)
 		}
 
-		s += "║\n"
+		s += "│\n"
 	}
 
-	s += "╚"
-	s += strings.Repeat("═", m.w-2)
-	s += "╝"
+	s += "╰"
+	s += strings.Repeat("─", m.w-2)
+	s += "╯"
 
 	return s
 }
