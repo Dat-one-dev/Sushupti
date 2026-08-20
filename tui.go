@@ -80,27 +80,57 @@ func (m model) View() string {
 	for _, day := range m.daily {
 		total += day.TotalSeconds
 	}
-	right := "  DAILY ACTIVITY\n"
-	right += fmt.Sprintf("  Total: %dh %02dm\n\n", total/3600, (total%3600)/60)
+	activityTitle := lipgloss.NewStyle().
+		Bold(true).
+		Foreground(lipgloss.Color("4")).
+		Render("DAILY ACTIVITY")
+
+	totalStyle := lipgloss.NewStyle().
+		Bold(true).
+		Foreground(lipgloss.Color("6"))
+
+	right := "  ┌────────────────────────────────────────────┐\n"
+	right += "  │  " + activityTitle + "                            │\n"
+	right += "  │  ──────────────────────────────────────────  │\n"
+	right += "  │  Total    " + totalStyle.Render(fmt.Sprintf("%dh %02dm", total/3600, (total%3600)/60)) + "                      │\n"
+	right += "  │                                            │\n"
 
 	for _, day := range m.daily {
 		bar := 0
 
 		if maxSec > 0 {
-			bar = day.TotalSeconds * 30 / maxSec
+			bar = day.TotalSeconds * 20 / maxSec
 		}
 
-		right += "  " + day.Date + " "
+		date := day.Date[5:]
 
-		for j := 0; j < bar; j++ {
-			right += "█"
+		line := "  │  " + date + "  "
+
+		if bar == 0 {
+			line += "─"
+		} else {
+			for j := 0; j < bar; j++ {
+				line += "█"
+			}
 		}
 
 		hours := day.TotalSeconds / 3600
 		minutes := (day.TotalSeconds % 3600) / 60
 
-		right += " " + fmt.Sprintf("%dh %02dm", hours, minutes) + "\n"
+		line += "  " + fmt.Sprintf("%dh %02dm", hours, minutes)
+
+		lineWidth := lipgloss.Width(line)
+		padding := 47 - lineWidth
+
+		if padding > 0 {
+			line += strings.Repeat(" ", padding)
+		}
+
+		line += "│"
+
+		right += line + "\n"
 	}
+	right += "  └────────────────────────────────────────────┘\n"
 	rightLines := strings.Split(right, "\n")
 
 	for i := 0; i < m.h-2; i++ {
