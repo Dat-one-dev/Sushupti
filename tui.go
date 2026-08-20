@@ -54,7 +54,7 @@ func (m model) View() string {
 	header = lipgloss.NewStyle().Foreground(lipgloss.Color("4")).Render(header)
 	menu := lipgloss.NewStyle().
 		Bold(true).
-		Foreground(lipgloss.Color("4")).
+		Foreground(lipgloss.Color("1")).
 		Render("MENU")
 	selected := lipgloss.NewStyle().
 		Bold(true).
@@ -91,8 +91,8 @@ func (m model) View() string {
 
 	right := "  ┌────────────────────────────────────────────┐\n"
 	right += "  │  " + activityTitle + "                            │\n"
-	right += "  │  ──────────────────────────────────────────  │\n"
-	right += "  │  Total    " + totalStyle.Render(fmt.Sprintf("%dh %02dm", total/3600, (total%3600)/60)) + "                      │\n"
+	right += "  │  ──────────────────────────────────────────│\n"
+	right += "  │  Total    " + totalStyle.Render(fmt.Sprintf("%dh %02dm", total/3600, (total%3600)/60)) + "                          │\n"
 	right += "  │                                            │\n"
 
 	for _, day := range m.daily {
