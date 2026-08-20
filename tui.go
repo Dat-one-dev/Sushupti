@@ -39,6 +39,7 @@ func (m model) View() string {
 
 	header := " SUSHUPTI "
 	header = lipgloss.NewStyle().Foreground(lipgloss.Color("4")).Render(header)
+	menu := lipgloss.NewStyle().Foreground(lipgloss.Color("1")).Render("MENU")
 
 	s := "╔"
 	s += strings.Repeat("═", (m.w-len(" SUSHUPTI ")-2)/2)
@@ -53,6 +54,10 @@ func (m model) View() string {
 			s += "┌──────────────────┐"
 		} else if i == m.h-3 {
 			s += "└──────────────────┘"
+		} else if i == 1 {
+			s += "│       " + menu + "       │"
+		} else if i == 2 {
+			s += "│   > Overview     │"
 		} else {
 			s += "│                  │"
 		}
