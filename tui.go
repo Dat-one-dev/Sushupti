@@ -4,6 +4,7 @@ import (
 	"strings"
 
 	tea "github.com/charmbracelet/bubbletea"
+	"github.com/charmbracelet/lipgloss"
 )
 
 type model struct {
@@ -35,17 +36,21 @@ func (m model) View() string {
 	if m.w < 20 || m.h < 5 {
 		return ""
 	}
+
 	header := " SUSHUPTI "
+	header = lipgloss.NewStyle().Foreground(lipgloss.Color("4")).Render(header)
 
 	s := "╔"
-	s += strings.Repeat("═", (m.w-len(header)-2)/2)
+	s += strings.Repeat("═", (m.w-len(" SUSHUPTI ")-2)/2)
 	s += header
-	s += strings.Repeat("═", (m.w-len(header)-2)/2)
+	s += strings.Repeat("═", (m.w-len(" SUSHUPTI ")-2)/2)
 	s += "╗\n"
 
 	for i := 0; i < m.h-2; i++ {
 		s += "║"
-		s += strings.Repeat(" ", m.w-2)
+		s += strings.Repeat(" ", 20)
+		s += "│"
+		s += strings.Repeat(" ", m.w-23)
 		s += "║\n"
 	}
 
