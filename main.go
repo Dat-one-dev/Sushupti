@@ -10,6 +10,8 @@ import (
 	"path/filepath"
 	"strings"
 	"time"
+
+	tea "github.com/charmbracelet/bubbletea"
 )
 
 func main() {
@@ -102,4 +104,8 @@ func main() {
 
 	}
 
+	p := tea.NewProgram(model{})
+	if _, err := p.Run(); !logError(err) {
+		return
+	}
 }
