@@ -46,30 +46,11 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	return m, nil
 }
 
-func (m model) View() string {
-	if m.w < 20 || m.h < 5 {
-		return ""
-	}
-	header := " SUSHUPTI "
-	header = lipgloss.NewStyle().Foreground(lipgloss.Color("4")).Render(header)
-	menu := lipgloss.NewStyle().
-		Bold(true).
-		Foreground(lipgloss.Color("1")).
-		Render("MENU")
-	selected := lipgloss.NewStyle().
-		Bold(true).
-		Foreground(lipgloss.Color("6"))
-
-	s := "╭"
-	s += strings.Repeat("─", (m.w-len(" SUSHUPTI ")-2)/2)
-	s += header
-	s += strings.Repeat("─", (m.w-len(" SUSHUPTI ")-2)/2)
-	s += "╮\n"
-
+func renderOverview(daily []DailyStat) string {
 	//doing ts again for 6-7th time instead of making a better way to do it
 	maxSec := 0
 
-	for _, day := range m.daily {
+	for _, day := range daily {
 		if day.TotalSeconds > maxSec {
 			maxSec = day.TotalSeconds
 		}
@@ -77,7 +58,7 @@ func (m model) View() string {
 
 	//right
 	total := 0
-	for _, day := range m.daily {
+	for _, day := range daily {
 		total += day.TotalSeconds
 	}
 	activityTitle := lipgloss.NewStyle().
@@ -95,7 +76,7 @@ func (m model) View() string {
 	right += "  │  Total    " + totalStyle.Render(fmt.Sprintf("%dh %02dm", total/3600, (total%3600)/60)) + "                          │\n"
 	right += "  │                                            │\n"
 
-	for _, day := range m.daily {
+	for _, day := range daily {
 		bar := 0
 
 		if maxSec > 0 {
@@ -131,6 +112,31 @@ func (m model) View() string {
 		right += line + "\n"
 	}
 	right += "  └────────────────────────────────────────────┘\n"
+
+	return right
+}
+
+func (m model) View() string {
+	if m.w < 20 || m.h < 5 {
+		return ""
+	}
+	header := " SUSHUPTI "
+	header = lipgloss.NewStyle().Foreground(lipgloss.Color("4")).Render(header)
+	menu := lipgloss.NewStyle().
+		Bold(true).
+		Foreground(lipgloss.Color("1")).
+		Render("MENU")
+	selected := lipgloss.NewStyle().
+		Bold(true).
+		Foreground(lipgloss.Color("6"))
+
+	s := "╭"
+	s += strings.Repeat("─", (m.w-len(" SUSHUPTI ")-2)/2)
+	s += header
+	s += strings.Repeat("─", (m.w-len(" SUSHUPTI ")-2)/2)
+	s += "╮\n"
+
+	right := renderOverview(m.daily)
 	rightLines := strings.Split(right, "\n")
 
 	for i := 0; i < m.h-2; i++ {
