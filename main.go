@@ -33,8 +33,6 @@ func main() {
 		return
 	}
 
-	fmt.Println("Start:", *startDate, "VS:", parsed)
-	fmt.Println("End:", *endDate, "VS: ", parsedE)
 	config := Config{}
 	user, err := user.Current()
 	if !logError(err) {
@@ -74,8 +72,6 @@ func main() {
 		return
 	} else {
 		defer httpResponse.Body.Close()
-		fmt.Println("Status:", httpResponse.Status)
-		fmt.Println("Status code:", httpResponse.StatusCode)
 		x, err := io.ReadAll(httpResponse.Body)
 		if !logError(err) {
 			return
@@ -90,6 +86,7 @@ func main() {
 			dailyStats = append(dailyStats, DailyStat{
 				Date:         day.Range.Date,
 				TotalSeconds: day.GrandTotal.TotalSeconds,
+				Projects:     day.Projects,
 			})
 		}
 
@@ -98,8 +95,10 @@ func main() {
 		if !logError(err) {
 			return
 		}
+		most := mostUsedProject(dailyStats)
 
-		fmt.Println("Graph exported to sushupti.png")
+		fmt.Println("Most used project:", most.ProjectName)
+		fmt.Println("Time:", most.TotalSeconds)
 
 	}
 

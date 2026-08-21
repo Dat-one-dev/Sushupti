@@ -152,6 +152,30 @@ func renderOverview(daily []DailyStat) string {
 	return right
 }
 
+func renderProjects(daily []DailyStat) string {
+	most := mostUsedProject(daily)
+
+	projectsTitle := lipgloss.NewStyle().
+		Bold(true).
+		Foreground(lipgloss.Color("4")).
+		Render("Projects")
+
+	mostprojName := lipgloss.NewStyle().
+		Bold(true).
+		Foreground(lipgloss.Color("1")).
+		Render(most.ProjectName)
+
+	time := fmt.Sprintf("%dh %02dm", most.TotalSeconds/3600, (most.TotalSeconds%3600)/60)
+
+	right := "  ┌────────────────────────────────────────────┐\n"
+	right += "  │  " + projectsTitle + "                                  │\n"
+	right += "  │  ──────────────────────────────────────────│\n"
+	right += "  │  Most Hours  " + mostprojName + "  " + time + "                │\n"
+	right += "  └────────────────────────────────────────────┘\n"
+
+	return right
+}
+
 func (m model) View() string {
 	if m.w < 20 || m.h < 5 {
 		return ""
@@ -173,6 +197,8 @@ func (m model) View() string {
 	s += "╮\n"
 
 	right := renderOverview(m.daily)
+	right += renderProjects(m.daily)
+
 	rightLines := strings.Split(right, "\n")
 
 	for i := 0; i < m.h-2; i++ {

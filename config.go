@@ -17,6 +17,7 @@ type Project struct {
 
 type DailyStat struct {
 	Date         string
+	Projects     []Project
 	TotalSeconds int
 }
 

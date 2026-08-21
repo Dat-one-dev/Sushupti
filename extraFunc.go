@@ -39,3 +39,17 @@ func parseTime(date string) (string, error) {
 
 	return parsedTime.Format("2006-01-02"), nil
 }
+
+func mostUsedProject(daily []DailyStat) Project {
+	var most Project
+
+	for _, day := range daily {
+		for _, project := range day.Projects {
+			if project.TotalSeconds > most.TotalSeconds {
+				most = project
+			}
+		}
+	}
+
+	return most
+}
