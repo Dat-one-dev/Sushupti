@@ -47,33 +47,69 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 }
 
 func renderOverview(daily []DailyStat) string {
-	//doing ts again for 6-7th time instead of making a better way to do it
+	//ALL VARIABLES ARE HERE
 	maxSec := 0
-
-	for _, day := range daily {
-		if day.TotalSeconds > maxSec {
-			maxSec = day.TotalSeconds
-		}
-	}
-
-	//right
 	total := 0
-	for _, day := range daily {
-		total += day.TotalSeconds
-	}
-	activityTitle := lipgloss.NewStyle().
+	bestDay := ""
+	bestTime := 0
+	activeDays := 0
+	dailyAverage := 0
+
+	//ALL LIPGLLOSS STUFF IS HERE
+	overviewTitle := lipgloss.NewStyle().
 		Bold(true).
 		Foreground(lipgloss.Color("4")).
-		Render("DAILY ACTIVITY")
+		Render("Overview - Last 10 Days")
 
 	totalStyle := lipgloss.NewStyle().
 		Bold(true).
 		Foreground(lipgloss.Color("6"))
 
+	charBar := lipgloss.NewStyle().
+		Bold(true).
+		Foreground(lipgloss.Color("6"))
+
+	//doing ts again for 6-7th time instead of making a better way to do it
+
+	// max seconds loop
+	for _, day := range daily {
+		if day.TotalSeconds > maxSec {
+			maxSec = day.TotalSeconds
+		}
+	}
+	//total seconds loop
+	for _, day := range daily {
+		total += day.TotalSeconds
+	}
+
+	//activeDays loop
+	for _, day := range daily {
+		if day.TotalSeconds > 0 {
+			activeDays++
+		}
+	}
+
+	//bestDay bestTime loop
+	for _, day := range daily {
+		if day.TotalSeconds > bestTime {
+			bestTime = day.TotalSeconds
+			bestDay = day.Date
+		}
+	}
+
+	//Dailyavg
+	if activeDays > 0 {
+		dailyAverage = total / activeDays
+	}
+
+	//RIGHT HEADER
 	right := "  ┌────────────────────────────────────────────┐\n"
-	right += "  │  " + activityTitle + "                            │\n"
+	right += "  │  " + overviewTitle + "                   │\n"
 	right += "  │  ──────────────────────────────────────────│\n"
-	right += "  │  Total    " + totalStyle.Render(fmt.Sprintf("%dh %02dm", total/3600, (total%3600)/60)) + "                          │\n"
+	right += "  │  Total       " + totalStyle.Render(fmt.Sprintf("%dh %02dm", total/3600, (total%3600)/60)) + "                       │\n"
+	right += "  │  Active Days " + totalStyle.Render(fmt.Sprintf("%d", activeDays)) + "                             │\n"
+	right += "  │  Best Day    " + totalStyle.Render(bestDay[5:]) + "  " + totalStyle.Render(fmt.Sprintf("%dh %02dm", bestTime/3600, (bestTime%3600)/60)) + "                 │\n"
+	right += "  │  Daily Avg   " + totalStyle.Render(fmt.Sprintf("%dh %02dm", dailyAverage/3600, (dailyAverage%3600)/60)) + "                        │\n"
 	right += "  │                                            │\n"
 
 	for _, day := range daily {
@@ -91,7 +127,7 @@ func renderOverview(daily []DailyStat) string {
 			line += "─"
 		} else {
 			for j := 0; j < bar; j++ {
-				line += "█"
+				line += charBar.Render("█")
 			}
 		}
 
