@@ -186,14 +186,14 @@ func renderLeaderboard(daily []DailyStat) string {
 	leaderboardTitle := lipgloss.NewStyle().Bold(true).Foreground(lipgloss.Color("4")).Render("Projects Leaderboard")
 
 	right := "  ┌────────────────────────────────────────────┐\n"
-	right += "  │  " + leaderboardTitle + "                         │\n"
+	right += "  │  " + leaderboardTitle + "                      │\n"
 	right += "  │  ──────────────────────────────────────────│\n"
 
 	for i, project := range projects {
 		hours := project.TotalSeconds / 3600
 		minutes := (project.TotalSeconds % 3600) / 60
 		right += fmt.Sprintf(
-			"  │  %d. %-20s %dh %02dm              │\n",
+			"  │  %d. %-20s %dh %02dm            │\n",
 			i+1,
 			project.ProjectName,
 			hours,
@@ -225,10 +225,12 @@ func (m model) View() string {
 	s += strings.Repeat("─", (m.w-len(" SUSHUPTI ")-2)/2)
 	s += "╮\n"
 
-	right := renderOverview(m.daily)
-	right += renderProjects(m.daily)
-	right += renderLeaderboard(m.daily)
+	overview := renderOverview(m.daily)
+	projects := renderProjects(m.daily)
+	leaderboard := renderLeaderboard(m.daily)
 
+	top := joinBoxes(overview, leaderboard)
+	right := top + "\n" + projects
 	rightLines := strings.Split(right, "\n")
 
 	for i := 0; i < m.h-2; i++ {

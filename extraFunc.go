@@ -3,7 +3,10 @@ package main
 import (
 	"fmt"
 	"net/http"
+	"strings"
 	"time"
+
+	"github.com/charmbracelet/lipgloss"
 )
 
 func logError(err error) bool {
@@ -41,13 +44,20 @@ func parseTime(date string) (string, error) {
 }
 
 func mostUsedProject(daily []DailyStat) Project {
-	var most Project
+	projects := make(map[string]int)
 
 	for _, day := range daily {
 		for _, project := range day.Projects {
-			if project.TotalSeconds > most.TotalSeconds {
-				most = project
-			}
+			projects[project.ProjectName] += project.TotalSeconds
+		}
+	}
+
+	var most Project
+
+	for name, seconds := range projects {
+		if seconds > most.TotalSeconds {
+			most.ProjectName = name
+			most.TotalSeconds = seconds
 		}
 	}
 
@@ -144,4 +154,43 @@ func ProjectLeaderboard(daily []DailyStat) []Project {
 		projects = projects[:5]
 	}
 	return projects
+}
+
+// THIS SPECIFC FUNC IS BY HELP OF AI CUZ MY BRAIN WAS FKED UP
+func joinBoxes(left string, right string) string {
+	leftLines := strings.Split(left, "\n")
+	rightLines := strings.Split(right, "\n")
+
+	maxLines := len(leftLines)
+	if len(rightLines) > maxLines {
+		maxLines = len(rightLines)
+	}
+
+	var result strings.Builder
+
+	for i := 0; i < maxLines; i++ {
+		leftLine := ""
+		rightLine := ""
+
+		if i < len(leftLines) {
+			leftLine = leftLines[i]
+		}
+
+		if i < len(rightLines) {
+			rightLine = rightLines[i]
+		}
+
+		// Keep the left box column fixed at 50 chars.
+		leftWidth := lipgloss.Width(leftLine)
+		if leftWidth < 50 {
+			leftLine += strings.Repeat(" ", 50-leftWidth)
+		}
+
+		result.WriteString(leftLine)
+		result.WriteString("  ")
+		result.WriteString(rightLine)
+		result.WriteString("\n")
+	}
+
+	return strings.TrimSuffix(result.String(), "\n")
 }
