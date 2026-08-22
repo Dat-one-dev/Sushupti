@@ -46,7 +46,7 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	return m, nil
 }
 
-func renderOverview(daily []DailyStat) string {
+func renderOverview(daily []DailyStat) []string {
 	//ALL VARIABLES ARE HERE
 	maxSec := 0
 	total := 0
@@ -102,15 +102,16 @@ func renderOverview(daily []DailyStat) string {
 		dailyAverage = total / activeDays
 	}
 
-	//RIGHT HEADER
-	right := "  ┌────────────────────────────────────────────┐\n"
-	right += "  │  " + overviewTitle + "                   │\n"
-	right += "  │  ──────────────────────────────────────────│\n"
-	right += "  │  Total       " + totalStyle.Render(fmt.Sprintf("%dh %02dm", total/3600, (total%3600)/60)) + "                       │\n"
-	right += "  │  Active Days " + totalStyle.Render(fmt.Sprintf("%d", activeDays)) + "                             │\n"
-	right += "  │  Best Day    " + totalStyle.Render(bestDay[5:]) + "  " + totalStyle.Render(fmt.Sprintf("%dh %02dm", bestTime/3600, (bestTime%3600)/60)) + "                 │\n"
-	right += "  │  Daily Avg   " + totalStyle.Render(fmt.Sprintf("%dh %02dm", dailyAverage/3600, (dailyAverage%3600)/60)) + "                        │\n"
-	right += "  │                                            │\n"
+	content := []string{
+		overviewTitle,
+		"──────────────────────────────────────────",
+		"Total       " + totalStyle.Render(fmt.Sprintf("%dh %02dm", total/3600, (total%3600)/60)),
+		"Active Days " + totalStyle.Render(fmt.Sprintf("%d", activeDays)),
+		"Best Day    " + totalStyle.Render(bestDay[5:]) + "  " +
+			totalStyle.Render(fmt.Sprintf("%dh %02dm", bestTime/3600, (bestTime%3600)/60)),
+		"Daily Avg   " + totalStyle.Render(fmt.Sprintf("%dh %02dm", dailyAverage/3600, (dailyAverage%3600)/60)),
+		"",
+	}
 
 	for _, day := range daily {
 		bar := 0
@@ -119,9 +120,7 @@ func renderOverview(daily []DailyStat) string {
 			bar = day.TotalSeconds * 20 / maxSec
 		}
 
-		date := day.Date[5:]
-
-		line := "  │  " + date + "  "
+		line := day.Date[5:] + "  "
 
 		if bar == 0 {
 			line += "─"
@@ -134,156 +133,183 @@ func renderOverview(daily []DailyStat) string {
 		hours := day.TotalSeconds / 3600
 		minutes := (day.TotalSeconds % 3600) / 60
 
-		line += "  " + fmt.Sprintf("%dh %02dm", hours, minutes)
+		line += fmt.Sprintf("  %dh %02dm", hours, minutes)
 
-		lineWidth := lipgloss.Width(line)
-		padding := 47 - lineWidth
-
-		if padding > 0 {
-			line += strings.Repeat(" ", padding)
-		}
-
-		line += "│"
-
-		right += line + "\n"
+		content = append(content, line)
 	}
-	right += "  └────────────────────────────────────────────┘\n"
 
-	return right
+	return content
 }
-
-func renderProjects(daily []DailyStat) string {
+func renderProjects(daily []DailyStat) []string {
 	most := mostUsedProject(daily)
-	projectTIme := projectTotalTime(daily, most.ProjectName)
-	projectShare := projectShareCalc(daily, projectTIme)
+	projectTime := projectTotalTime(daily, most.ProjectName)
+	projectShare := projectShareCalc(daily, projectTime)
 
 	projectsTitle := lipgloss.NewStyle().
 		Bold(true).
 		Foreground(lipgloss.Color("4")).
 		Render("Projects")
 
-	mostprojName := lipgloss.NewStyle().
+	mostProjectName := lipgloss.NewStyle().
 		Bold(true).
 		Foreground(lipgloss.Color("1")).
 		Render(most.ProjectName)
 
 	shareTxt := fmt.Sprintf("%.1f%%", projectShare)
 
-	right := "  ┌────────────────────────────────────────────┐\n"
-	right += "  │  " + projectsTitle + "                                  │\n"
-	right += "  │  ──────────────────────────────────────────│\n"
-	right += "  │  Most Hours  " + mostprojName + "  " + "                      │\n"
-	right += "  │  Total Time  " + fmt.Sprintf("%dh %02dm", projectTIme/3600, (projectTIme%3600)/60) + "                        │\n"
-	right += "  │  Share       " + shareTxt + "                         │\n"
-	right += "  └────────────────────────────────────────────┘\n"
+	content := []string{
+		projectsTitle,
+		"──────────────────────────────────────────",
+		"Most Hours  " + mostProjectName,
+		"Total Time  " + fmt.Sprintf("%dh %02dm",
+			projectTime/3600,
+			(projectTime%3600)/60),
+		"Share       " + shareTxt,
+	}
 
-	return right
+	return content
 }
-
-func renderLeaderboard(daily []DailyStat) string {
+func renderLeaderboard(daily []DailyStat) []string {
 	projects := ProjectLeaderboard(daily)
 
-	leaderboardTitle := lipgloss.NewStyle().Bold(true).Foreground(lipgloss.Color("4")).Render("Projects Leaderboard")
+	leaderboardTitle := lipgloss.NewStyle().
+		Bold(true).
+		Foreground(lipgloss.Color("4")).
+		Render("Projects Leaderboard")
 
-	right := "  ┌────────────────────────────────────────────┐\n"
-	right += "  │  " + leaderboardTitle + "                      │\n"
-	right += "  │  ──────────────────────────────────────────│\n"
+	content := []string{
+		leaderboardTitle,
+		"──────────────────────────────────────────",
+	}
 
 	for i, project := range projects {
 		hours := project.TotalSeconds / 3600
 		minutes := (project.TotalSeconds % 3600) / 60
-		right += fmt.Sprintf(
-			"  │  %d. %-20s %dh %02dm            │\n",
+
+		content = append(content, fmt.Sprintf(
+			"%d. %-20s %dh %02dm",
 			i+1,
 			project.ProjectName,
 			hours,
 			minutes,
-		)
+		))
 	}
 
-	right += "  └────────────────────────────────────────────┘\n"
-	return right
+	return content
 }
-
 func (m model) View() string {
-	if m.w < 20 || m.h < 5 {
+	if m.w < 40 || m.h < 10 {
 		return ""
 	}
-	header := " SUSHUPTI "
-	header = lipgloss.NewStyle().Foreground(lipgloss.Color("4")).Render(header)
-	menu := lipgloss.NewStyle().
+
+	// HEADER
+	header := lipgloss.NewStyle().
+		Foreground(lipgloss.Color("4")).
+		Render(" SUSHUPTI ")
+
+	headerLine := "╭"
+	headerLine += strings.Repeat("─", (m.w-lipgloss.Width(header)-2)/2)
+	headerLine += header
+	headerLine += strings.Repeat("─", (m.w-lipgloss.Width(header)-2)/2)
+	headerLine += "╮"
+
+	// WIDTHS
+	menuWidth := 20
+	gap := 2
+
+	contentWidth := m.w - menuWidth - gap - 3
+
+	if contentWidth < 20 {
+		contentWidth = 20
+	}
+
+	boxWidth := contentWidth / 2
+
+	// MENU
+	menuStyle := lipgloss.NewStyle().
 		Bold(true).
-		Foreground(lipgloss.Color("1")).
-		Render("MENU")
-	selected := lipgloss.NewStyle().
+		Foreground(lipgloss.Color("1"))
+
+	selectedStyle := lipgloss.NewStyle().
 		Bold(true).
 		Foreground(lipgloss.Color("6"))
 
-	s := "╭"
-	s += strings.Repeat("─", (m.w-len(" SUSHUPTI ")-2)/2)
-	s += header
-	s += strings.Repeat("─", (m.w-len(" SUSHUPTI ")-2)/2)
-	s += "╮\n"
-
-	overview := renderOverview(m.daily)
-	projects := renderProjects(m.daily)
-	leaderboard := renderLeaderboard(m.daily)
-
-	top := joinBoxes(overview, leaderboard)
-	right := top + "\n" + projects
-	rightLines := strings.Split(right, "\n")
-
-	for i := 0; i < m.h-2; i++ {
-		s += "│"
-
-		if i == 0 {
-			s += "┌──────────────────┐"
-		} else if i == m.h-3 {
-			s += "└──────────────────┘"
-		} else if i == 1 {
-			s += "│       " + menu + "       │"
-		} else if i == 2 {
-			if m.selected == 0 {
-				s += "│   " + selected.Render("▸  Overview") + "    │"
-			} else {
-				s += "│     Overview     │"
-			}
-		} else if i == 3 {
-			if m.selected == 1 {
-				s += "│   " + selected.Render("▸  Projects") + "    │"
-			} else {
-				s += "│     Projects     │"
-			}
-		} else if i == 4 {
-			if m.selected == 2 {
-				s += "│   " + selected.Render("▸  Activity") + "    │"
-			} else {
-				s += "│     Activity     │"
-			}
-		} else {
-			s += "│                  │"
-		}
-
-		s += "│"
-
-		if i < len(rightLines) {
-			s += rightLines[i]
-
-			space := m.w - 23 - lipgloss.Width(rightLines[i])
-
-			if space > 0 {
-				s += strings.Repeat(" ", space)
-			}
-		} else {
-			s += strings.Repeat(" ", m.w-23)
-		}
-
-		s += "│\n"
+	menuContent := []string{
+		menuStyle.Render("MENU"),
+		"",
+		"Overview",
+		"Projects",
+		"Activity",
 	}
 
-	s += "╰"
-	s += strings.Repeat("─", m.w-2)
-	s += "╯"
+	if m.selected == 0 {
+		menuContent[2] = selectedStyle.Render("▸ Overview")
+	}
 
-	return s
+	if m.selected == 1 {
+		menuContent[3] = selectedStyle.Render("▸ Projects")
+	}
+
+	if m.selected == 2 {
+		menuContent[4] = selectedStyle.Render("▸ Activity")
+	}
+
+	menuBox := box(menuContent, menuWidth)
+
+	// DASHBOARD BOXES
+	overviewBox := box(renderOverview(m.daily), boxWidth)
+	leaderboardBox := box(renderLeaderboard(m.daily), boxWidth)
+
+	top := joinBoxes(overviewBox, leaderboardBox)
+
+	projectsBox := box(
+		renderProjects(m.daily),
+		boxWidth,
+	)
+
+	bottom := projectsBox
+
+	// JOIN MENU + DASHBOARD
+	dashboard := top + "\n" + bottom
+
+	menuLines := strings.Split(menuBox, "\n")
+	dashboardLines := strings.Split(dashboard, "\n")
+
+	height := m.h - 2
+
+	var s strings.Builder
+
+	s.WriteString(headerLine)
+	s.WriteString("\n")
+
+	for i := 0; i < height; i++ {
+		s.WriteString("│")
+
+		// MENU
+		if i < len(menuLines) {
+			s.WriteString(menuLines[i])
+		} else {
+			s.WriteString(strings.Repeat(" ", menuWidth))
+		}
+
+		s.WriteString("│")
+
+		// GAP
+		s.WriteString(" ")
+
+		// DASHBOARD
+		if i < len(dashboardLines) {
+			s.WriteString(dashboardLines[i])
+		} else {
+			s.WriteString(strings.Repeat(" ", len(top)))
+		}
+
+		s.WriteString("\n")
+	}
+
+	s.WriteString("╰")
+	s.WriteString(strings.Repeat("─", m.w-2))
+	s.WriteString("╯")
+
+	return s.String()
 }
