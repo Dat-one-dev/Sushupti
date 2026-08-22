@@ -180,6 +180,31 @@ func renderProjects(daily []DailyStat) string {
 	return right
 }
 
+func renderLeaderboard(daily []DailyStat) string {
+	projects := ProjectLeaderboard(daily)
+
+	leaderboardTitle := lipgloss.NewStyle().Bold(true).Foreground(lipgloss.Color("4")).Render("Projects Leaderboard")
+
+	right := "  ┌────────────────────────────────────────────┐\n"
+	right += "  │  " + leaderboardTitle + "                         │\n"
+	right += "  │  ──────────────────────────────────────────│\n"
+
+	for i, project := range projects {
+		hours := project.TotalSeconds / 3600
+		minutes := (project.TotalSeconds % 3600) / 60
+		right += fmt.Sprintf(
+			"  │  %d. %-20s %dh %02dm              │\n",
+			i+1,
+			project.ProjectName,
+			hours,
+			minutes,
+		)
+	}
+
+	right += "  └────────────────────────────────────────────┘\n"
+	return right
+}
+
 func (m model) View() string {
 	if m.w < 20 || m.h < 5 {
 		return ""
@@ -202,6 +227,7 @@ func (m model) View() string {
 
 	right := renderOverview(m.daily)
 	right += renderProjects(m.daily)
+	right += renderLeaderboard(m.daily)
 
 	rightLines := strings.Split(right, "\n")
 

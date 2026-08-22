@@ -109,3 +109,39 @@ func projectShareCalc(daily []DailyStat, projectTime int) float64 {
 
 	return share
 }
+
+func ProjectLeaderboard(daily []DailyStat) []Project {
+	var projects []Project
+
+	for _, day := range daily {
+		for _, project := range day.Projects {
+			found := false
+			for i, existing := range projects {
+				if existing.ProjectName == project.ProjectName {
+					projects[i].TotalSeconds += project.TotalSeconds
+					found = true
+					break
+				}
+			}
+
+			if !found {
+				projects = append(projects, Project{
+					ProjectName:  project.ProjectName,
+					TotalSeconds: project.TotalSeconds,
+				})
+			}
+		}
+	}
+
+	for i := 0; i < len(projects); i++ {
+		for j := i + 1; j < len(projects); j++ {
+			if projects[j].TotalSeconds > projects[i].TotalSeconds {
+				projects[i], projects[j] = projects[j], projects[i]
+			}
+		}
+	}
+	if len(projects) > 5 {
+		projects = projects[:5]
+	}
+	return projects
+}
