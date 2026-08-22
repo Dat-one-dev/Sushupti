@@ -81,3 +81,31 @@ func mostUsedlang(daily []DailyStat) Category {
 
 	return most
 }
+
+func projectTotalTime(daily []DailyStat, projectName string) int {
+	total := 0
+	for _, day := range daily {
+		for _, project := range day.Projects {
+			if project.ProjectName == projectName {
+				total += project.TotalSeconds
+			}
+		}
+	}
+
+	return total
+}
+
+func projectShareCalc(daily []DailyStat, projectTime int) float64 {
+	total := 0
+	for _, day := range daily {
+		total += day.TotalSeconds
+	}
+
+	share := 0.0
+
+	if total > 0 {
+		share = float64(projectTime) / float64(total) * 100
+	}
+
+	return share
+}
