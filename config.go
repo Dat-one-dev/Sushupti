@@ -18,7 +18,15 @@ type Project struct {
 type DailyStat struct {
 	Date         string
 	Projects     []Project
+	Editors      []Category
+	Languages    []Category
 	TotalSeconds int
+}
+
+type Category struct {
+	Name         string  `json:"name"`
+	TotalSeconds int     `json:"total_seconds"`
+	Percent      float64 `json:"percent"`
 }
 
 type Day struct {
@@ -29,7 +37,9 @@ type Day struct {
 		Seconds      int `json:"seconds"`
 	} `json:"grand_total"`
 
-	Projects []Project `json:"projects"`
+	Editors   []Category `json:"editors"`
+	Languages []Category `json:"languages"`
+	Projects  []Project  `json:"projects"`
 
 	Range struct {
 		Date string `json:"date"`

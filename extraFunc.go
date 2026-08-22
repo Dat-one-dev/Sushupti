@@ -53,3 +53,31 @@ func mostUsedProject(daily []DailyStat) Project {
 
 	return most
 }
+
+func mostUsedEditor(daily []DailyStat) Category {
+	var most Category
+
+	for _, day := range daily {
+		for _, editor := range day.Editors {
+			if editor.TotalSeconds > most.TotalSeconds {
+				most = editor
+			}
+		}
+	}
+
+	return most
+}
+
+func mostUsedlang(daily []DailyStat) Category {
+	var most Category
+
+	for _, day := range daily {
+		for _, lang := range day.Languages {
+			if lang.TotalSeconds > most.TotalSeconds {
+				most = lang
+			}
+		}
+	}
+
+	return most
+}

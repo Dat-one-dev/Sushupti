@@ -154,7 +154,8 @@ func renderOverview(daily []DailyStat) string {
 
 func renderProjects(daily []DailyStat) string {
 	most := mostUsedProject(daily)
-
+	editor := mostUsedEditor(daily)
+	lang := mostUsedlang(daily)
 	projectsTitle := lipgloss.NewStyle().
 		Bold(true).
 		Foreground(lipgloss.Color("4")).
@@ -165,12 +166,24 @@ func renderProjects(daily []DailyStat) string {
 		Foreground(lipgloss.Color("1")).
 		Render(most.ProjectName)
 
+	editorName := lipgloss.NewStyle().
+		Bold(true).
+		Foreground(lipgloss.Color("1")).
+		Render(editor.Name)
+
+	langName := lipgloss.NewStyle().
+		Bold(true).
+		Foreground(lipgloss.Color("1")).
+		Render(lang.Name)
+
 	time := fmt.Sprintf("%dh %02dm", most.TotalSeconds/3600, (most.TotalSeconds%3600)/60)
 
 	right := "  ┌────────────────────────────────────────────┐\n"
 	right += "  │  " + projectsTitle + "                                  │\n"
 	right += "  │  ──────────────────────────────────────────│\n"
 	right += "  │  Most Hours  " + mostprojName + "  " + time + "                │\n"
+	right += "  │  Best Editor  " + editorName + "  " + "                           │\n"
+	right += "  │  Best Lang  " + langName + "  " + "                             │\n"
 	right += "  └────────────────────────────────────────────┘\n"
 
 	return right

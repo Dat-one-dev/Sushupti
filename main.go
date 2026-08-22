@@ -73,6 +73,7 @@ func main() {
 	} else {
 		defer httpResponse.Body.Close()
 		x, err := io.ReadAll(httpResponse.Body)
+		fmt.Println(string(x))
 		if !logError(err) {
 			return
 		}
@@ -87,6 +88,8 @@ func main() {
 				Date:         day.Range.Date,
 				TotalSeconds: day.GrandTotal.TotalSeconds,
 				Projects:     day.Projects,
+				Editors:      day.Editors,
+				Languages:    day.Languages,
 			})
 		}
 
