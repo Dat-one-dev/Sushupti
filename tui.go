@@ -13,6 +13,7 @@ type model struct {
 	h        int
 	selected int
 	daily    []DailyStat
+	anim     int
 }
 
 func (m model) Init() tea.Cmd {
@@ -126,7 +127,7 @@ func renderOverview(daily []DailyStat) []string {
 			line += "─"
 		} else {
 			for j := 0; j < bar; j++ {
-				line += charBar.Render("█")
+				line += charBar.Render("#")
 			}
 		}
 
