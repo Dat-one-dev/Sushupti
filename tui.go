@@ -307,8 +307,12 @@ func (m model) View() string {
 		s.WriteString("\n")
 	}
 
+	quitText := lipgloss.NewStyle().Foreground(lipgloss.Color("8")).Render(" q/ctrl+c to quit")
+	brdw := m.w - lipgloss.Width(quitText) - 2 //sometime my variable name are so I lwk start regeretting my life choices....lets see if anyone in future finds this repo then does he know what bdrw means....ig if i see this code after 7-8 months i will forget it
 	s.WriteString("╰")
-	s.WriteString(strings.Repeat("─", m.w-2))
+	s.WriteString(strings.Repeat("─", brdw/2))
+	s.WriteString(quitText)
+	s.WriteString(strings.Repeat("─", brdw-brdw/2))
 	s.WriteString("╯")
 
 	return s.String()
