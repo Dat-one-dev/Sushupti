@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"strings"
+	"time"
 
 	tea "github.com/charmbracelet/bubbletea"
 	"github.com/charmbracelet/lipgloss"
@@ -16,8 +17,16 @@ type model struct {
 	anim     int
 }
 
+type tickMsg struct{}
+
 func (m model) Init() tea.Cmd {
-	return nil
+	return tick()
+}
+
+func tick() tea.Cmd {
+	return tea.Tick(150*time.Millisecond, func(t time.Time) tea.Msg {
+		return tickMsg{}
+	})
 }
 
 func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
@@ -44,10 +53,16 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		m.h = size.Height
 	}
 
+	if _, ok := msg.(tickMsg); ok {
+		if m.anim < 20 {
+			m.anim++
+			return m, tick()
+		}
+	}
 	return m, nil
 }
 
-func renderOverview(daily []DailyStat) []string {
+func renderOverview(daily []DailyStat, anim int) []string {
 	//ALL VARIABLES ARE HERE
 	maxSec := 0
 	total := 0
@@ -119,6 +134,10 @@ func renderOverview(daily []DailyStat) []string {
 
 		if maxSec > 0 {
 			bar = day.TotalSeconds * 20 / maxSec
+
+			if bar > anim {
+				bar = anim
+			}
 		}
 
 		line := day.Date[5:] + "  "
@@ -258,7 +277,7 @@ func (m model) View() string {
 	menuBox := box(menuContent, menuWidth)
 
 	// DASHBOARD BOXES
-	overviewBox := box(renderOverview(m.daily), boxWidth)
+	overviewBox := box(renderOverview(m.daily, m.anim), boxWidth)
 	leaderboardBox := box(renderLeaderboard(m.daily), boxWidth)
 
 	top := joinBoxes(overviewBox, leaderboardBox)
