@@ -272,6 +272,99 @@ func renderSidebar(daily []DailyStat, symb string) []string {
 	}
 	return content
 }
+func renderCat(frame int) []string {
+	cats := [][]string{
+		{
+			"    HACK CAT     ",
+			"                 ",
+			"  ^~^  ,         ",
+			" (`Y`) )         ",
+			" /   \\/          ",
+			"(\\|||/)          ",
+		},
+		{
+			"    HACK CAT     ",
+			"                 ",
+			"  ^~^   ,        ",
+			" ('Y') )         ",
+			" /   \\/          ",
+			"(\\|||/)          ",
+		},
+		{
+			"    HACK CAT     ",
+			"                 ",
+			"  ^~^    ,       ",
+			" ('Y') )         ",
+			" /   \\/          ",
+			"(\\|||/)          ",
+		},
+		{
+			"    HACK CAT     ",
+			"                 ",
+
+			"  ^~^   ,        ",
+			" (`Y`) )         ",
+			" /   \\/          ",
+			"(\\|||/)          ",
+		},
+		{
+			"    HACK CAT     ",
+			"                 ",
+
+			"  ^~^  ,         ",
+			" ('Y') )         ",
+			" /   \\/          ",
+			"(\\|||/)          ",
+		},
+		{
+			"    HACK CAT     ",
+			"                 ",
+
+			"  ^~^ ,          ",
+			" ('Y') )         ",
+			" /   \\/          ",
+			"(\\|||/)          ",
+		},
+		{
+			"    HACK CAT     ",
+			"                 ",
+
+			"  ^~^,           ",
+			" ('Y') )         ",
+			" /   \\/          ",
+			"(\\|||/)          ",
+		},
+		{
+			"    HACK CAT     ",
+			"                 ",
+
+			"  ^~^ ,          ",
+			" ('Y') )         ",
+			" /   \\/          ",
+			"(\\|||/)          ",
+		},
+		{
+			"    HACK CAT     ",
+			"                 ",
+
+			"  ^~^  ,         ",
+			" ('Y') )         ",
+			" /   \\/          ",
+			"(\\|||/)          ",
+		},
+		{
+			"    HACK CAT     ",
+			"                 ",
+
+			"  ^~^   ,        ",
+			" ('Y') )         ",
+			" /   \\/          ",
+			"(\\|||/)          ",
+		},
+	}
+
+	return cats[frame%len(cats)]
+}
 func (m model) View() string {
 	if m.w < 40 || m.h < 10 {
 		return ""
@@ -330,12 +423,12 @@ func (m model) View() string {
 		renderSidebar(m.daily, m.symb),
 		sidebarWidth,
 	)
+	cat := renderCat(m.symbframe)
 	// SIDEBAR + DASHBOARD
 	dashboard := top + "\n" + bottom
-
 	sidebarLines := strings.Split(sidebarBox, "\n")
 	dashboardLines := strings.Split(dashboard, "\n")
-
+	catlines := cat
 	height := m.h - 2
 
 	var s strings.Builder
@@ -350,7 +443,27 @@ func (m model) View() string {
 		if i < len(sidebarLines) {
 			s.WriteString(sidebarLines[i])
 		} else {
-			s.WriteString(strings.Repeat(" ", sidebarWidth))
+			// CAT
+			// CAT
+			catStart := height - len(catlines)
+			catIndex := i - catStart
+
+			if catIndex >= 0 && catIndex < len(catlines) {
+				catLine := catlines[catIndex]
+
+				catWidth := lipgloss.Width(catLine)
+				leftPadding := (sidebarWidth - catWidth) / 2
+
+				s.WriteString(strings.Repeat(" ", leftPadding))
+				s.WriteString(catLine)
+
+				remaining := sidebarWidth - leftPadding - catWidth
+				if remaining > 0 {
+					s.WriteString(strings.Repeat(" ", remaining))
+				}
+			} else {
+				s.WriteString(strings.Repeat(" ", sidebarWidth))
+			}
 		}
 
 		s.WriteString(" ")
