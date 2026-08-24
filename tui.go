@@ -12,7 +12,6 @@ import (
 type model struct {
 	w         int
 	h         int
-	selected  int
 	daily     []DailyStat
 	anim      int
 	symb      string
@@ -37,17 +36,6 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	if key, ok := msg.(tea.KeyMsg); ok {
 		if key.String() == "q" || key.String() == "ctrl+c" {
 			return m, tea.Quit
-		}
-		if key.String() == "down" || key.String() == "j" {
-			if m.selected < 2 {
-				m.selected++
-			}
-		}
-
-		if key.String() == "up" || key.String() == "k" {
-			if m.selected > 0 {
-				m.selected--
-			}
 		}
 	}
 
@@ -239,6 +227,51 @@ func renderLeaderboard(daily []DailyStat) []string {
 
 	return content
 }
+func renderSidebar(daily []DailyStat, symb string) []string {
+	total := 0
+	today := 0
+
+	for _, day := range daily {
+		total += day.TotalSeconds
+	}
+	if len(daily) > 0 {
+		today = daily[len(daily)-1].TotalSeconds
+	}
+
+	totalHr := total / 3600
+	totalMin := (total % 3600) / 60
+	todayHr := today / 3600
+	todayMin := (today % 3600) / 60
+
+	titleStyle := lipgloss.NewStyle().
+		Bold(true).
+		Foreground(lipgloss.Color("4"))
+
+	valueStyle := lipgloss.NewStyle().
+		Bold(true).
+		Foreground(lipgloss.Color("6"))
+
+	liveStyle := lipgloss.NewStyle().
+		Bold(true).
+		Foreground(lipgloss.Color("1"))
+
+	content := []string{
+		titleStyle.Render("SUSHUPTI"),
+		"",
+		liveStyle.Render(symb + " LIVE"),
+		"",
+		titleStyle.Render("TODAY"),
+		valueStyle.Render(fmt.Sprintf("%02dh %02dm", todayHr, todayMin)),
+		"",
+		titleStyle.Render("DATA"),
+		fmt.Sprintf("%d days", len(daily)),
+		valueStyle.Render(fmt.Sprintf("%02dh %02dm", totalHr, totalMin)),
+		"",
+		titleStyle.Render("STATUS"),
+		liveStyle.Render("● ACTIVE"),
+	}
+	return content
+}
 func (m model) View() string {
 	if m.w < 40 || m.h < 10 {
 		return ""
@@ -257,54 +290,29 @@ func (m model) View() string {
 		symbol +
 		headerStyle.Render("]")
 
+	headerWidth := lipgloss.Width(header)
+	remaining := m.w - headerWidth - 2
+
+	left := remaining / 2
+	right := remaining - left
+
 	headerLine := "╭"
-	headerLine += strings.Repeat("─", (m.w-lipgloss.Width(header)-2)/2)
+	headerLine += strings.Repeat("─", left)
 	headerLine += header
-	headerLine += strings.Repeat("─", (m.w-lipgloss.Width(header)-2)/2)
+	headerLine += strings.Repeat("─", right)
 	headerLine += "╮"
 
 	// WIDTHS
-	menuWidth := 20
+	sidebarWidth := 24
 	gap := 2
 
-	contentWidth := m.w - menuWidth - gap - 3
+	contentWidth := m.w - sidebarWidth - gap - 1
 
 	if contentWidth < 20 {
 		contentWidth = 20
 	}
 
-	boxWidth := contentWidth / 2
-
-	// MENU
-	menuStyle := lipgloss.NewStyle().
-		Bold(true).
-		Foreground(lipgloss.Color("1"))
-
-	selectedStyle := lipgloss.NewStyle().
-		Bold(true).
-		Foreground(lipgloss.Color("6"))
-
-	menuContent := []string{
-		menuStyle.Render("MENU"),
-		"",
-		"Overview",
-		"Projects",
-		"Activity",
-	}
-
-	if m.selected == 0 {
-		menuContent[2] = selectedStyle.Render("▸ Overview")
-	}
-
-	if m.selected == 1 {
-		menuContent[3] = selectedStyle.Render("▸ Projects")
-	}
-
-	if m.selected == 2 {
-		menuContent[4] = selectedStyle.Render("▸ Activity")
-	}
-
-	menuBox := box(menuContent, menuWidth)
+	boxWidth := (contentWidth - 2) / 2
 
 	// DASHBOARD BOXES
 	overviewBox := box(renderOverview(m.daily, m.anim), boxWidth)
@@ -318,11 +326,14 @@ func (m model) View() string {
 	)
 
 	bottom := projectsBox
-
-	// JOIN MENU + DASHBOARD
+	sidebarBox := box(
+		renderSidebar(m.daily, m.symb),
+		sidebarWidth,
+	)
+	// SIDEBAR + DASHBOARD
 	dashboard := top + "\n" + bottom
 
-	menuLines := strings.Split(menuBox, "\n")
+	sidebarLines := strings.Split(sidebarBox, "\n")
 	dashboardLines := strings.Split(dashboard, "\n")
 
 	height := m.h - 2
@@ -335,26 +346,30 @@ func (m model) View() string {
 	for i := 0; i < height; i++ {
 		s.WriteString("│")
 
-		// MENU
-		if i < len(menuLines) {
-			s.WriteString(menuLines[i])
+		// SIDEBAR
+		if i < len(sidebarLines) {
+			s.WriteString(sidebarLines[i])
 		} else {
-			s.WriteString(strings.Repeat(" ", menuWidth))
+			s.WriteString(strings.Repeat(" ", sidebarWidth))
 		}
 
-		s.WriteString("│")
-
-		// GAP
 		s.WriteString(" ")
 
 		// DASHBOARD
 		if i < len(dashboardLines) {
-			s.WriteString(dashboardLines[i])
+			line := dashboardLines[i]
+			padding := contentWidth - lipgloss.Width(line)
+
+			s.WriteString(line)
+
+			if padding > 0 {
+				s.WriteString(strings.Repeat(" ", padding))
+			}
 		} else {
-			s.WriteString(strings.Repeat(" ", len(top)))
+			s.WriteString(strings.Repeat(" ", contentWidth))
 		}
 
-		s.WriteString("\n")
+		s.WriteString("│\n")
 	}
 
 	quitText := lipgloss.NewStyle().Foreground(lipgloss.Color("8")).Render(" q/ctrl+c to quit")
