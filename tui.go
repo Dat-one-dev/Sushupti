@@ -10,11 +10,14 @@ import (
 )
 
 type model struct {
-	w        int
-	h        int
-	selected int
-	daily    []DailyStat
-	anim     int
+	w         int
+	h         int
+	selected  int
+	daily     []DailyStat
+	anim      int
+	symb      string
+	symbColor string
+	symbframe int
 }
 
 type tickMsg struct{}
@@ -56,9 +59,28 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	if _, ok := msg.(tickMsg); ok {
 		if m.anim < 20 {
 			m.anim++
-			return m, tick()
 		}
+
+		m.symbframe++
+
+		switch m.symbframe % 4 {
+		case 0:
+			m.symb = "│"
+			m.symbColor = "1"
+		case 1:
+			m.symb = "╲"
+			m.symbColor = "1"
+		case 2:
+			m.symb = "─"
+			m.symbColor = "1"
+		case 3:
+			m.symb = "╱"
+			m.symbColor = "1"
+		}
+
+		return m, tick()
 	}
+
 	return m, nil
 }
 
@@ -223,9 +245,17 @@ func (m model) View() string {
 	}
 
 	// HEADER
-	header := lipgloss.NewStyle().
-		Foreground(lipgloss.Color("4")).
-		Render(" SUSHUPTI ")
+	symbol := lipgloss.NewStyle().
+		Bold(true).
+		Foreground(lipgloss.Color(m.symbColor)).
+		Render(m.symb)
+
+	headerStyle := lipgloss.NewStyle().
+		Foreground(lipgloss.Color("4"))
+
+	header := headerStyle.Render(" SUSHUPTI [") +
+		symbol +
+		headerStyle.Render("]")
 
 	headerLine := "╭"
 	headerLine += strings.Repeat("─", (m.w-lipgloss.Width(header)-2)/2)
