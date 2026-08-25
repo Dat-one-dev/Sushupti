@@ -365,6 +365,16 @@ func renderCat(frame int) []string {
 
 	return cats[frame%len(cats)]
 }
+func renderLang(daily []DailyStat) []string {
+	languagesTitle := lipgloss.NewStyle().Bold(true).Foreground(lipgloss.Color("4")).Render("Languages")
+	content := []string{
+		languagesTitle,
+		"──────────────────────────────────────────",
+		"Language Distribution",
+	}
+
+	return content
+}
 func (m model) View() string {
 	if m.w < 40 || m.h < 10 {
 		return ""
@@ -418,7 +428,13 @@ func (m model) View() string {
 		boxWidth,
 	)
 
-	bottom := projectsBox
+	languagesBox := box(
+		renderLang(m.daily),
+		boxWidth,
+	)
+
+	bottom := joinBoxes(projectsBox, languagesBox)
+
 	sidebarBox := box(
 		renderSidebar(m.daily, m.symb),
 		sidebarWidth,
