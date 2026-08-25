@@ -366,11 +366,21 @@ func renderCat(frame int) []string {
 	return cats[frame%len(cats)]
 }
 func renderLang(daily []DailyStat) []string {
-	languagesTitle := lipgloss.NewStyle().Bold(true).Foreground(lipgloss.Color("4")).Render("Languages")
+	languagesTitle := lipgloss.NewStyle().
+		Bold(true).
+		Foreground(lipgloss.Color("4")).
+		Render("Languages")
+
+	goStyle := lipgloss.NewStyle().Foreground(lipgloss.Color("2"))
+	pythonStyle := lipgloss.NewStyle().Foreground(lipgloss.Color("3"))
+	cssStyle := lipgloss.NewStyle().Foreground(lipgloss.Color("5"))
+
 	content := []string{
 		languagesTitle,
 		"──────────────────────────────────────────",
-		"Language Distribution",
+		goStyle.Render("████████████████") +
+			pythonStyle.Render("████████") +
+			cssStyle.Render("████"),
 	}
 
 	return content
@@ -420,25 +430,13 @@ func (m model) View() string {
 	// DASHBOARD BOXES
 	overviewBox := box(renderOverview(m.daily, m.anim), boxWidth)
 	leaderboardBox := box(renderLeaderboard(m.daily), boxWidth)
+	projectsBox := box(renderProjects(m.daily), boxWidth)
+	languagesBox := box(renderLang(m.daily), boxWidth)
+	sidebarBox := box(renderSidebar(m.daily, m.symb), sidebarWidth)
 
 	top := joinBoxes(overviewBox, leaderboardBox)
-
-	projectsBox := box(
-		renderProjects(m.daily),
-		boxWidth,
-	)
-
-	languagesBox := box(
-		renderLang(m.daily),
-		boxWidth,
-	)
-
 	bottom := joinBoxes(projectsBox, languagesBox)
 
-	sidebarBox := box(
-		renderSidebar(m.daily, m.symb),
-		sidebarWidth,
-	)
 	cat := renderCat(m.symbframe)
 	// SIDEBAR + DASHBOARD
 	dashboard := top + "\n" + bottom
