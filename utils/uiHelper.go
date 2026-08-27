@@ -1,4 +1,4 @@
-package main
+package utils
 
 import (
 	"strings"
@@ -6,7 +6,7 @@ import (
 	"github.com/charmbracelet/lipgloss"
 )
 
-func joinBoxes(left, right string) string {
+func JoinBoxes(left, right string) string {
 	leftLines := strings.Split(left, "\n")
 	rightLines := strings.Split(right, "\n")
 	leftWidth := 0
@@ -48,7 +48,7 @@ func joinBoxes(left, right string) string {
 	return result.String()
 }
 
-func box(content []string, width int) string {
+func Box(content []string, width int) string {
 	if width < 4 {
 		width = 4
 	}

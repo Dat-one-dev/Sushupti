@@ -1,10 +1,12 @@
 package main
 
 import (
-	"fmt"
 	"strings"
 	"time"
 
+	"github.com/Dat-one-dev/Sushupti/data"
+	"github.com/Dat-one-dev/Sushupti/tui"
+	"github.com/Dat-one-dev/Sushupti/utils"
 	tea "github.com/charmbracelet/bubbletea"
 	"github.com/charmbracelet/lipgloss"
 )
@@ -12,7 +14,7 @@ import (
 type model struct {
 	w         int
 	h         int
-	daily     []DailyStat
+	daily     []data.DailyStat
 	anim      int
 	symb      string
 	symbColor string
@@ -71,339 +73,6 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 
 	return m, nil
 }
-
-func renderOverview(daily []DailyStat, anim int) []string {
-	//ALL VARIABLES ARE HERE
-	maxSec := 0
-	total := 0
-	bestDay := ""
-	bestTime := 0
-	activeDays := 0
-	dailyAverage := 0
-
-	//ALL LIPGLLOSS STUFF IS HERE
-	overviewTitle := lipgloss.NewStyle().
-		Bold(true).
-		Foreground(lipgloss.Color("4")).
-		Render("Overview - Last 10 Days")
-
-	totalStyle := lipgloss.NewStyle().
-		Bold(true).
-		Foreground(lipgloss.Color("6"))
-
-	charBar := lipgloss.NewStyle().
-		Bold(true).
-		Foreground(lipgloss.Color("6"))
-
-	//doing ts again for 6-7th time instead of making a better way to do it
-
-	// max seconds loop
-	for _, day := range daily {
-		if day.TotalSeconds > maxSec {
-			maxSec = day.TotalSeconds
-		}
-	}
-	//total seconds loop
-	for _, day := range daily {
-		total += day.TotalSeconds
-	}
-
-	//activeDays loop
-	for _, day := range daily {
-		if day.TotalSeconds > 0 {
-			activeDays++
-		}
-	}
-
-	//bestDay bestTime loop
-	for _, day := range daily {
-		if day.TotalSeconds > bestTime {
-			bestTime = day.TotalSeconds
-			bestDay = day.Date
-		}
-	}
-
-	//Dailyavg
-	if activeDays > 0 {
-		dailyAverage = total / activeDays
-	}
-
-	content := []string{
-		overviewTitle,
-		"──────────────────────────────────────────",
-		"Total       " + totalStyle.Render(fmt.Sprintf("%dh %02dm", total/3600, (total%3600)/60)),
-		"Active Days " + totalStyle.Render(fmt.Sprintf("%d", activeDays)),
-		"Best Day    " + totalStyle.Render(bestDay[5:]) + "  " +
-			totalStyle.Render(fmt.Sprintf("%dh %02dm", bestTime/3600, (bestTime%3600)/60)),
-		"Daily Avg   " + totalStyle.Render(fmt.Sprintf("%dh %02dm", dailyAverage/3600, (dailyAverage%3600)/60)),
-		"",
-	}
-
-	for _, day := range daily {
-		bar := 0
-
-		if maxSec > 0 {
-			bar = day.TotalSeconds * 20 / maxSec
-
-			if bar > anim {
-				bar = anim
-			}
-		}
-
-		line := day.Date[5:] + "  "
-
-		if bar == 0 {
-			line += "─"
-		} else {
-			for j := 0; j < bar; j++ {
-				line += charBar.Render("#")
-			}
-		}
-
-		hours := day.TotalSeconds / 3600
-		minutes := (day.TotalSeconds % 3600) / 60
-
-		line += fmt.Sprintf("  %dh %02dm", hours, minutes)
-
-		content = append(content, line)
-	}
-
-	return content
-}
-func renderProjects(daily []DailyStat) []string {
-	most := mostUsedProject(daily)
-	projectTime := projectTotalTime(daily, most.ProjectName)
-	projectShare := projectShareCalc(daily, projectTime)
-
-	projectsTitle := lipgloss.NewStyle().
-		Bold(true).
-		Foreground(lipgloss.Color("4")).
-		Render("Projects")
-
-	mostProjectName := lipgloss.NewStyle().
-		Bold(true).
-		Foreground(lipgloss.Color("1")).
-		Render(most.ProjectName)
-
-	shareTxt := fmt.Sprintf("%.1f%%", projectShare)
-
-	content := []string{
-		projectsTitle,
-		"──────────────────────────────────────────",
-		"Most Hours  " + mostProjectName,
-		"Total Time  " + fmt.Sprintf("%dh %02dm",
-			projectTime/3600,
-			(projectTime%3600)/60),
-		"Share       " + shareTxt,
-	}
-
-	return content
-}
-func renderLeaderboard(daily []DailyStat) []string {
-	projects := ProjectLeaderboard(daily)
-
-	leaderboardTitle := lipgloss.NewStyle().
-		Bold(true).
-		Foreground(lipgloss.Color("4")).
-		Render("Projects Leaderboard")
-
-	content := []string{
-		leaderboardTitle,
-		"──────────────────────────────────────────",
-	}
-
-	for i, project := range projects {
-		hours := project.TotalSeconds / 3600
-		minutes := (project.TotalSeconds % 3600) / 60
-
-		content = append(content, fmt.Sprintf(
-			"%d. %-20s %dh %02dm",
-			i+1,
-			project.ProjectName,
-			hours,
-			minutes,
-		))
-	}
-
-	return content
-}
-func renderSidebar(daily []DailyStat, symb string) []string {
-	total := 0
-	today := 0
-
-	for _, day := range daily {
-		total += day.TotalSeconds
-	}
-	if len(daily) > 0 {
-		today = daily[len(daily)-1].TotalSeconds
-	}
-
-	totalHr := total / 3600
-	totalMin := (total % 3600) / 60
-	todayHr := today / 3600
-	todayMin := (today % 3600) / 60
-
-	titleStyle := lipgloss.NewStyle().
-		Bold(true).
-		Foreground(lipgloss.Color("4"))
-
-	valueStyle := lipgloss.NewStyle().
-		Bold(true).
-		Foreground(lipgloss.Color("6"))
-
-	liveStyle := lipgloss.NewStyle().
-		Bold(true).
-		Foreground(lipgloss.Color("1"))
-
-	content := []string{
-		titleStyle.Render("SUSHUPTI"),
-		"",
-		liveStyle.Render(symb + " LIVE"),
-		"",
-		titleStyle.Render("TODAY"),
-		valueStyle.Render(fmt.Sprintf("%02dh %02dm", todayHr, todayMin)),
-		"",
-		titleStyle.Render("DATA"),
-		fmt.Sprintf("%d days", len(daily)),
-		valueStyle.Render(fmt.Sprintf("%02dh %02dm", totalHr, totalMin)),
-		"",
-		titleStyle.Render("STATUS"),
-		liveStyle.Render("● ACTIVE"),
-	}
-	return content
-}
-func renderCat(frame int) []string {
-	cats := [][]string{
-		{
-			"    HACK CAT     ",
-			"                 ",
-			"  ^~^  ,         ",
-			" (`Y`) )         ",
-			" /   \\/          ",
-			"(\\|||/)          ",
-		},
-		{
-			"    HACK CAT     ",
-			"                 ",
-			"  ^~^   ,        ",
-			" ('Y') )         ",
-			" /   \\/          ",
-			"(\\|||/)          ",
-		},
-		{
-			"    HACK CAT     ",
-			"                 ",
-			"  ^~^    ,       ",
-			" ('Y') )         ",
-			" /   \\/          ",
-			"(\\|||/)          ",
-		},
-		{
-			"    HACK CAT     ",
-			"                 ",
-
-			"  ^~^   ,        ",
-			" (`Y`) )         ",
-			" /   \\/          ",
-			"(\\|||/)          ",
-		},
-		{
-			"    HACK CAT     ",
-			"                 ",
-
-			"  ^~^  ,         ",
-			" ('Y') )         ",
-			" /   \\/          ",
-			"(\\|||/)          ",
-		},
-		{
-			"    HACK CAT     ",
-			"                 ",
-
-			"  ^~^ ,          ",
-			" ('Y') )         ",
-			" /   \\/          ",
-			"(\\|||/)          ",
-		},
-		{
-			"    HACK CAT     ",
-			"                 ",
-
-			"  ^~^,           ",
-			" ('Y') )         ",
-			" /   \\/          ",
-			"(\\|||/)          ",
-		},
-		{
-			"    HACK CAT     ",
-			"                 ",
-
-			"  ^~^ ,          ",
-			" ('Y') )         ",
-			" /   \\/          ",
-			"(\\|||/)          ",
-		},
-		{
-			"    HACK CAT     ",
-			"                 ",
-
-			"  ^~^  ,         ",
-			" ('Y') )         ",
-			" /   \\/          ",
-			"(\\|||/)          ",
-		},
-		{
-			"    HACK CAT     ",
-			"                 ",
-
-			"  ^~^   ,        ",
-			" ('Y') )         ",
-			" /   \\/          ",
-			"(\\|||/)          ",
-		},
-	}
-
-	return cats[frame%len(cats)]
-}
-func renderLang(daily []DailyStat) []string {
-	projects := ProjectLeaderboard(daily)
-	title := lipgloss.NewStyle().Bold(true).Foreground(lipgloss.Color("4")).Render("Projects Activity")
-	barStyl := lipgloss.NewStyle().Bold(true).Foreground(lipgloss.Color("6"))
-
-	content := []string{
-		title,
-		"──────────────────────────────────────────",
-	}
-
-	if len(projects) == 0 {
-		content = append(content, "No Projects Data")
-		return content
-	}
-	max := projects[0].TotalSeconds
-
-	for _, project := range projects {
-		bar := 0
-
-		if max > 0 {
-			bar = project.TotalSeconds * 20 / max
-		}
-		line := ""
-
-		for i := 0; i < bar; i++ {
-			line += barStyl.Render("█")
-		}
-
-		hrs := project.TotalSeconds / 3600
-		mns := (project.TotalSeconds % 3600) / 60
-
-		line += fmt.Sprintf(
-			" %-15s %dh %02dm", project.ProjectName, hrs, mns,
-		)
-
-		content = append(content, line)
-	}
-	return content
-}
 func (m model) View() string {
 	if m.w < 40 || m.h < 10 {
 		return ""
@@ -447,16 +116,16 @@ func (m model) View() string {
 	boxWidth := (contentWidth - 2) / 2
 
 	// DASHBOARD BOXES
-	overviewBox := box(renderOverview(m.daily, m.anim), boxWidth)
-	leaderboardBox := box(renderLeaderboard(m.daily), boxWidth)
-	projectsBox := box(renderProjects(m.daily), boxWidth)
-	languagesBox := box(renderLang(m.daily), boxWidth)
-	sidebarBox := box(renderSidebar(m.daily, m.symb), sidebarWidth)
+	overviewBox := utils.Box(tui.RenderOverview(m.daily, m.anim), boxWidth)
+	leaderboardBox := utils.Box(tui.RenderLeaderboard(m.daily), boxWidth)
+	projectsBox := utils.Box(tui.RenderProjects(m.daily), boxWidth)
+	languagesBox := utils.Box(tui.RenderLang(m.daily), boxWidth)
+	sidebarBox := utils.Box(tui.RenderSidebar(m.daily, m.symb), sidebarWidth)
 
-	top := joinBoxes(overviewBox, leaderboardBox)
-	bottom := joinBoxes(projectsBox, languagesBox)
+	top := utils.JoinBoxes(overviewBox, leaderboardBox)
+	bottom := utils.JoinBoxes(projectsBox, languagesBox)
 
-	cat := renderCat(m.symbframe)
+	cat := tui.RenderCat(m.symbframe)
 	// SIDEBAR + DASHBOARD
 	dashboard := top + "\n" + bottom
 	sidebarLines := strings.Split(sidebarBox, "\n")

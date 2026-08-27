@@ -1,9 +1,11 @@
-package main
+package utils
 
 import (
 	"fmt"
 	"net/http"
 	"time"
+
+	"github.com/Dat-one-dev/Sushupti/data"
 )
 
 func logError(err error) bool {
@@ -14,7 +16,7 @@ func logError(err error) bool {
 	return true
 }
 
-func sendRequest(config Config) (*http.Response, error) {
+func SendRequest(config data.Config) (*http.Response, error) {
 	packet, err := http.NewRequest(http.MethodGet, config.APIUrl, nil)
 	if !logError(err) {
 		return nil, err
@@ -31,7 +33,7 @@ func sendRequest(config Config) (*http.Response, error) {
 	return recievedReq, nil
 }
 
-func parseTime(date string) (string, error) {
+func ParseTime(date string) (string, error) {
 	parsedTime, err := time.Parse("02-01-06", date)
 	if err != nil {
 		return "", err
@@ -40,7 +42,7 @@ func parseTime(date string) (string, error) {
 	return parsedTime.Format("2006-01-02"), nil
 }
 
-func mostUsedProject(daily []DailyStat) Project {
+func MostUsedProject(daily []data.DailyStat) data.Project {
 	projects := make(map[string]int)
 
 	for _, day := range daily {
@@ -49,7 +51,7 @@ func mostUsedProject(daily []DailyStat) Project {
 		}
 	}
 
-	var most Project
+	var most data.Project
 
 	for name, seconds := range projects {
 		if seconds > most.TotalSeconds {
@@ -61,8 +63,8 @@ func mostUsedProject(daily []DailyStat) Project {
 	return most
 }
 
-func mostUsedEditor(daily []DailyStat) Category {
-	var most Category
+func MostUsedEditor(daily []data.DailyStat) data.Category {
+	var most data.Category
 
 	for _, day := range daily {
 		for _, editor := range day.Editors {
@@ -75,8 +77,8 @@ func mostUsedEditor(daily []DailyStat) Category {
 	return most
 }
 
-func mostUsedlang(daily []DailyStat) Category {
-	var most Category
+func MostUsedlang(daily []data.DailyStat) data.Category {
+	var most data.Category
 
 	for _, day := range daily {
 		for _, lang := range day.Languages {
@@ -89,7 +91,7 @@ func mostUsedlang(daily []DailyStat) Category {
 	return most
 }
 
-func projectTotalTime(daily []DailyStat, projectName string) int {
+func ProjectTotalTime(daily []data.DailyStat, projectName string) int {
 	total := 0
 	for _, day := range daily {
 		for _, project := range day.Projects {
@@ -102,7 +104,7 @@ func projectTotalTime(daily []DailyStat, projectName string) int {
 	return total
 }
 
-func projectShareCalc(daily []DailyStat, projectTime int) float64 {
+func ProjectShareCalc(daily []data.DailyStat, projectTime int) float64 {
 	total := 0
 	for _, day := range daily {
 		total += day.TotalSeconds
@@ -117,8 +119,8 @@ func projectShareCalc(daily []DailyStat, projectTime int) float64 {
 	return share
 }
 
-func ProjectLeaderboard(daily []DailyStat) []Project {
-	var projects []Project
+func ProjectLeaderboard(daily []data.DailyStat) []data.Project {
+	var projects []data.Project
 
 	for _, day := range daily {
 		for _, project := range day.Projects {
@@ -132,7 +134,7 @@ func ProjectLeaderboard(daily []DailyStat) []Project {
 			}
 
 			if !found {
-				projects = append(projects, Project{
+				projects = append(projects, data.Project{
 					ProjectName:  project.ProjectName,
 					TotalSeconds: project.TotalSeconds,
 				})

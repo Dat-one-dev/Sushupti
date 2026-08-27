@@ -1,4 +1,4 @@
-package main
+package utils
 
 import (
 	"fmt"
@@ -8,12 +8,13 @@ import (
 	"image/png"
 	"os"
 
+	"github.com/Dat-one-dev/Sushupti/data"
 	"golang.org/x/image/font"
 	"golang.org/x/image/font/opentype"
 	"golang.org/x/image/math/fixed"
 )
 
-func drawText(img *image.RGBA, text string, x, y, size float64, fontData *opentype.Font, textColor color.Color) {
+func DrawText(img *image.RGBA, text string, x, y, size float64, fontData *opentype.Font, textColor color.Color) {
 
 	face, err := opentype.NewFace(fontData, &opentype.FaceOptions{
 		Size:    size,
@@ -35,7 +36,7 @@ func drawText(img *image.RGBA, text string, x, y, size float64, fontData *openty
 	d.DrawString(text)
 }
 
-func graph(dailyStats []DailyStat) {
+func Graph(dailyStats []data.DailyStat) {
 	maxSec := 0
 	for _, stat := range dailyStats {
 		if stat.TotalSeconds > maxSec {
@@ -59,7 +60,7 @@ func graph(dailyStats []DailyStat) {
 	}
 }
 
-func exportGraph(dailyStat []DailyStat, filename string, darkMode bool) error {
+func ExportGraph(dailyStat []data.DailyStat, filename string, darkMode bool) error {
 	//Dark Mode
 	bgColor := color.White
 	textColor := color.Black
@@ -108,8 +109,8 @@ func exportGraph(dailyStat []DailyStat, filename string, darkMode bool) error {
 	draw.Draw(img, img.Bounds(), &image.Uniform{
 		C: bgColor,
 	}, image.Point{}, draw.Src)
-	drawText(img, "SushupTi", 500-70, 48, 48, fontData2, textColor)
-	drawText(img, "Daily Coding Activity", 400, 80, 24, fontData, textColor)
+	DrawText(img, "SushupTi", 500-70, 48, 48, fontData2, textColor)
+	DrawText(img, "Daily Coding Activity", 400, 80, 24, fontData, textColor)
 
 	for _, stat := range dailyStat {
 		if stat.TotalSeconds > maxSec {
@@ -141,7 +142,7 @@ func exportGraph(dailyStat []DailyStat, filename string, darkMode bool) error {
 	for hour := 0; hour <= maxHours; hour++ {
 		x := left + hour*(right-left)/maxHours
 
-		drawText(
+		DrawText(
 			img,
 			fmt.Sprintf("%d Hour", hour),
 			float64(x-7),
@@ -158,7 +159,7 @@ func exportGraph(dailyStat []DailyStat, filename string, darkMode bool) error {
 
 		currentWidth := stat.TotalSeconds * barWidth / maxSec
 		y := top + i*(barHeight+gap)
-		drawText(
+		DrawText(
 			img,
 			stat.Date,
 			120,
