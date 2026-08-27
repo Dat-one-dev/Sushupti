@@ -2,44 +2,45 @@ package utils
 
 import (
 	"fmt"
-	"net/http"
-	"time"
 
 	"github.com/Dat-one-dev/Sushupti/data"
 )
 
-func logError(err error) bool {
-	if err != nil {
-		fmt.Println("Error:", err)
-		return false
+func TotalTime(daily []data.DailyStat) int {
+	total := 0
+	for _, day := range daily {
+		total += day.TotalSeconds
 	}
-	return true
+
+	return total
 }
 
-func SendRequest(config data.Config) (*http.Response, error) {
-	packet, err := http.NewRequest(http.MethodGet, config.APIUrl, nil)
-	if !logError(err) {
-		return nil, err
-	}
-
-	packet.Header.Set("Authorization", "Bearer "+config.APIkey)
-
-	packetClient := http.Client{}
-	recievedReq, err := packetClient.Do(packet)
-	if !logError(err) {
-		return nil, err
-	}
-
-	return recievedReq, nil
+func FormatTime(seconds int) string {
+	return fmt.Sprintf("%dh %02dm", seconds/3600, (seconds%3600)/60)
 }
 
-func ParseTime(date string) (string, error) {
-	parsedTime, err := time.Parse("02-01-06", date)
-	if err != nil {
-		return "", err
+func BestDay(daily []data.DailyStat) data.DailyStat {
+	var best data.DailyStat
+
+	for _, day := range daily {
+		if day.TotalSeconds > best.TotalSeconds {
+			best = day
+		}
 	}
 
-	return parsedTime.Format("2006-01-02"), nil
+	return best
+}
+
+func ActiveDays(daily []data.DailyStat) int {
+	activeD := 0
+
+	for _, day := range daily {
+		if day.TotalSeconds > 0 {
+			activeD++
+		}
+	}
+
+	return activeD
 }
 
 func MostUsedProject(daily []data.DailyStat) data.Project {
@@ -153,4 +154,14 @@ func ProjectLeaderboard(daily []data.DailyStat) []data.Project {
 		projects = projects[:5]
 	}
 	return projects
+}
+
+func DailyAvg(daily []data.DailyStat) int {
+	activeD := ActiveDays(daily)
+
+	if activeD == 0 {
+		return 0
+	}
+
+	return TotalTime(daily) / activeD
 }
