@@ -366,23 +366,42 @@ func renderCat(frame int) []string {
 	return cats[frame%len(cats)]
 }
 func renderLang(daily []DailyStat) []string {
-	languagesTitle := lipgloss.NewStyle().
-		Bold(true).
-		Foreground(lipgloss.Color("4")).
-		Render("Languages")
-
-	goStyle := lipgloss.NewStyle().Foreground(lipgloss.Color("2"))
-	pythonStyle := lipgloss.NewStyle().Foreground(lipgloss.Color("3"))
-	cssStyle := lipgloss.NewStyle().Foreground(lipgloss.Color("5"))
+	projects := ProjectLeaderboard(daily)
+	title := lipgloss.NewStyle().Bold(true).Foreground(lipgloss.Color("4")).Render("Projects Activity")
+	barStyl := lipgloss.NewStyle().Bold(true).Foreground(lipgloss.Color("6"))
 
 	content := []string{
-		languagesTitle,
+		title,
 		"──────────────────────────────────────────",
-		goStyle.Render("████████████████") +
-			pythonStyle.Render("████████") +
-			cssStyle.Render("████"),
 	}
 
+	if len(projects) == 0 {
+		content = append(content, "No Projects Data")
+		return content
+	}
+	max := projects[0].TotalSeconds
+
+	for _, project := range projects {
+		bar := 0
+
+		if max > 0 {
+			bar = project.TotalSeconds * 20 / max
+		}
+		line := ""
+
+		for i := 0; i < bar; i++ {
+			line += barStyl.Render("█")
+		}
+
+		hrs := project.TotalSeconds / 3600
+		mns := (project.TotalSeconds % 3600) / 60
+
+		line += fmt.Sprintf(
+			" %-15s %dh %02dm", project.ProjectName, hrs, mns,
+		)
+
+		content = append(content, line)
+	}
 	return content
 }
 func (m model) View() string {

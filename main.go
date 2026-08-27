@@ -82,7 +82,11 @@ func main() {
 		if !logError(err) {
 			return
 		}
+		fmt.Println("LANGUAGES:")
 
+		for _, day := range response.Data {
+			fmt.Println(day.Range.Date, day.Languages)
+		}
 		for _, day := range response.Data {
 			dailyStats = append(dailyStats, DailyStat{
 				Date:         day.Range.Date,
@@ -98,10 +102,6 @@ func main() {
 		if !logError(err) {
 			return
 		}
-		most := mostUsedProject(dailyStats)
-
-		fmt.Println("Most used project:", most.ProjectName)
-		fmt.Println("Time:", most.TotalSeconds)
 
 	}
 
