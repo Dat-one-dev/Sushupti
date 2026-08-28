@@ -165,3 +165,25 @@ func DailyAvg(daily []data.DailyStat) int {
 
 	return TotalTime(daily) / activeD
 }
+
+func ProgBar(value, max, width, limit int) string {
+	result := ""
+
+	if max <= 0 {
+		return "-"
+	}
+
+	bar := value * width / max
+	if limit > 0 && bar > limit {
+		bar = limit
+	}
+
+	for i := 0; i < bar; i++ {
+		result += "#"
+	}
+
+	if result == "" {
+		return "-"
+	}
+	return result
+}

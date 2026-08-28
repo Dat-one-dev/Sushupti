@@ -4,51 +4,33 @@ import (
 	"fmt"
 
 	"github.com/Dat-one-dev/Sushupti/data"
-	"github.com/charmbracelet/lipgloss"
+	"github.com/Dat-one-dev/Sushupti/style"
+	"github.com/Dat-one-dev/Sushupti/utils"
 )
 
 func RenderSidebar(daily []data.DailyStat, symb string) []string {
-	total := 0
+	total := utils.TotalTime(daily)
 	today := 0
 
-	for _, day := range daily {
-		total += day.TotalSeconds
-	}
 	if len(daily) > 0 {
 		today = daily[len(daily)-1].TotalSeconds
 	}
 
-	totalHr := total / 3600
-	totalMin := (total % 3600) / 60
-	todayHr := today / 3600
-	todayMin := (today % 3600) / 60
-
-	titleStyle := lipgloss.NewStyle().
-		Bold(true).
-		Foreground(lipgloss.Color("4"))
-
-	valueStyle := lipgloss.NewStyle().
-		Bold(true).
-		Foreground(lipgloss.Color("6"))
-
-	liveStyle := lipgloss.NewStyle().
-		Bold(true).
-		Foreground(lipgloss.Color("1"))
-
 	content := []string{
-		titleStyle.Render("SUSHUPTI"),
+		style.Title.Render("SUSHUPTI"),
 		"",
-		liveStyle.Render(symb + " LIVE"),
+		style.Highlight.Render(symb + " LIVE"),
 		"",
-		titleStyle.Render("TODAY"),
-		valueStyle.Render(fmt.Sprintf("%02dh %02dm", todayHr, todayMin)),
+		style.Title.Render("TODAY"),
+		style.Value.Render(utils.FormatTime(today)),
 		"",
-		titleStyle.Render("DATA"),
+		style.Title.Render("DATA"),
 		fmt.Sprintf("%d days", len(daily)),
-		valueStyle.Render(fmt.Sprintf("%02dh %02dm", totalHr, totalMin)),
+		style.Value.Render(utils.FormatTime(total)),
 		"",
-		titleStyle.Render("STATUS"),
-		liveStyle.Render("● ACTIVE"),
+		style.Title.Render("STATUS"),
+		style.Highlight.Render("● ACTIVE"),
 	}
+
 	return content
 }

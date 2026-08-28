@@ -5,7 +5,7 @@ import (
 
 	"github.com/Dat-one-dev/Sushupti/data"
 	"github.com/Dat-one-dev/Sushupti/utils"
-	"github.com/charmbracelet/lipgloss"
+	"github.com/Dat-one-dev/Sushupti/style"
 )
 
 func RenderProjects(daily []data.DailyStat) []string {
@@ -13,26 +13,12 @@ func RenderProjects(daily []data.DailyStat) []string {
 	projectTime := utils.ProjectTotalTime(daily, most.ProjectName)
 	projectShare := utils.ProjectShareCalc(daily, projectTime)
 
-	projectsTitle := lipgloss.NewStyle().
-		Bold(true).
-		Foreground(lipgloss.Color("4")).
-		Render("Projects")
-
-	mostProjectName := lipgloss.NewStyle().
-		Bold(true).
-		Foreground(lipgloss.Color("1")).
-		Render(most.ProjectName)
-
-	shareTxt := fmt.Sprintf("%.1f%%", projectShare)
-
 	content := []string{
-		projectsTitle,
-		"──────────────────────────────────────────",
-		"Most Hours  " + mostProjectName,
-		"Total Time  " + fmt.Sprintf("%dh %02dm",
-			projectTime/3600,
-			(projectTime%3600)/60),
-		"Share       " + shareTxt,
+		style.Title.Render("Projects"),
+		style.Divider,
+		"Most Hours  " + style.Highlight.Render(most.ProjectName),
+		"Total Time  " + style.Value.Render(utils.FormatTime(projectTime)),
+		"Share       " + fmt.Sprintf("%.1f%%", projectShare),
 	}
 
 	return content

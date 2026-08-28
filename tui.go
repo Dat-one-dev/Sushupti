@@ -47,9 +47,7 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	}
 
 	if _, ok := msg.(tickMsg); ok {
-		if m.anim < 20 {
-			m.anim++
-		}
+		m.anim++
 
 		m.symbframe++
 
@@ -119,15 +117,16 @@ func (m model) View() string {
 	overviewBox := utils.Box(tui.RenderOverview(m.daily, m.anim), boxWidth)
 	leaderboardBox := utils.Box(tui.RenderLeaderboard(m.daily), boxWidth)
 	projectsBox := utils.Box(tui.RenderProjects(m.daily), boxWidth)
-	languagesBox := utils.Box(tui.RenderLang(m.daily), boxWidth)
+	languagesBox := utils.Box(tui.ProjectBar(m.daily, boxWidth, m.anim), boxWidth)
 	sidebarBox := utils.Box(tui.RenderSidebar(m.daily, m.symb), sidebarWidth)
 
-	top := utils.JoinBoxes(overviewBox, leaderboardBox)
-	bottom := utils.JoinBoxes(projectsBox, languagesBox)
+	rightC := leaderboardBox + "\n" +
+		projectsBox + "\n" +
+		languagesBox
 
 	cat := tui.RenderCat(m.symbframe)
 	// SIDEBAR + DASHBOARD
-	dashboard := top + "\n" + bottom
+	dashboard := utils.JoinBoxes(overviewBox, rightC)
 	sidebarLines := strings.Split(sidebarBox, "\n")
 	dashboardLines := strings.Split(dashboard, "\n")
 	catlines := cat

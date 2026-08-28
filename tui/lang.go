@@ -1,49 +1,51 @@
 package tui
 
 import (
-	"fmt"
-
 	"github.com/Dat-one-dev/Sushupti/data"
+	"github.com/Dat-one-dev/Sushupti/style"
 	"github.com/Dat-one-dev/Sushupti/utils"
-	"github.com/charmbracelet/lipgloss"
 )
 
-func RenderLang(daily []data.DailyStat) []string {
+func ProjectBar(daily []data.DailyStat, width, anim int) []string {
 	projects := utils.ProjectLeaderboard(daily)
-	title := lipgloss.NewStyle().Bold(true).Foreground(lipgloss.Color("4")).Render("Projects Activity")
-	barStyl := lipgloss.NewStyle().Bold(true).Foreground(lipgloss.Color("6"))
+	total := utils.TotalTime(daily)
+	bar := ""
+	layout := make([]int, 0, width)
 
 	content := []string{
-		title,
-		"──────────────────────────────────────────",
+		style.Title.Render("Projects Activity") + "  " +
+			style.Value.Render(utils.FormatTime(total)),
+		style.Divider,
 	}
 
-	if len(projects) == 0 {
-		content = append(content, "No Projects Data")
+	if len(projects) == 0 || total == 0 {
+		content = append(content, "─")
 		return content
 	}
-	max := projects[0].TotalSeconds
 
-	for _, project := range projects {
-		bar := 0
+	for i, project := range projects {
+		size := project.TotalSeconds * width / total
 
-		if max > 0 {
-			bar = project.TotalSeconds * 20 / max
+		for j := 0; j < size; j++ {
+			if len(layout) >= width {
+				break
+			}
+
+			layout = append(layout, i%len(style.ProjectColors))
 		}
-		line := ""
-
-		for i := 0; i < bar; i++ {
-			line += barStyl.Render("█")
-		}
-
-		hrs := project.TotalSeconds / 3600
-		mns := (project.TotalSeconds % 3600) / 60
-
-		line += fmt.Sprintf(
-			" %-15s %dh %02dm", project.ProjectName, hrs, mns,
-		)
-
-		content = append(content, line)
 	}
+
+	if anim > len(layout) {
+		anim = len(layout)
+	}
+
+	if anim < 0 {
+		anim = 0
+	}
+
+	for i := 0; i < anim; i++ {
+		bar += style.ProjectColors[layout[i]].Render("#")
+	}
+	content = append(content, bar)
 	return content
 }
