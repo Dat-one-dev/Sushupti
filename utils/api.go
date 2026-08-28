@@ -1,14 +1,20 @@
 package utils
 
 import (
+	"encoding/json"
 	"fmt"
+	"io"
 	"net/http"
+	"os"
+	"os/user"
+	"path/filepath"
+	"strings"
 	"time"
 
 	"github.com/Dat-one-dev/Sushupti/data"
 )
 
-func logError(err error) bool {
+func LogError(err error) bool {
 	if err != nil {
 		fmt.Println("Error:", err)
 		return false
@@ -18,7 +24,7 @@ func logError(err error) bool {
 
 func SendRequest(config data.Config) (*http.Response, error) {
 	packet, err := http.NewRequest(http.MethodGet, config.APIUrl, nil)
-	if !logError(err) {
+	if !LogError(err) {
 		return nil, err
 	}
 
@@ -26,7 +32,7 @@ func SendRequest(config data.Config) (*http.Response, error) {
 
 	packetClient := http.Client{}
 	recievedReq, err := packetClient.Do(packet)
-	if !logError(err) {
+	if !LogError(err) {
 		return nil, err
 	}
 
@@ -40,4 +46,72 @@ func ParseTime(date string) (string, error) {
 	}
 
 	return parsedTime.Format("2006-01-02"), nil
+}
+
+func LoadConfig(start, end string) (data.Config, error) {
+	user, err := user.Current()
+	if err != nil {
+		return data.Config{}, err
+	}
+	configPath := filepath.Join(user.HomeDir, ".wakatime.cfg")
+	configData, err := os.ReadFile(configPath)
+	if err != nil {
+		return data.Config{}, err
+	}
+
+	var config data.Config
+	for _, line := range strings.Split(string(configData), "\n") {
+		parts := strings.SplitN(line, "=", 2)
+		if len(parts) != 2 {
+			continue
+		}
+		key := strings.TrimSpace(parts[0])
+		value := strings.TrimSpace(parts[1])
+
+		switch key {
+		case "api_url":
+			config.APIUrl = fmt.Sprintf(
+				"%s/users/current/summaries?start=%s&end=%s",
+				value,
+				start,
+				end,
+			)
+		case "api_key":
+			config.APIkey = value
+		}
+	}
+	return config, nil
+}
+
+func FetchDaily(config data.Config) ([]data.DailyStat, error) {
+	response, err := SendRequest(config)
+	if err != nil {
+		return nil, err
+	}
+	defer response.Body.Close()
+
+	body, err := io.ReadAll(response.Body)
+	if err != nil {
+		return nil, err
+	}
+
+	var result data.Response
+
+	if err := json.Unmarshal(body, &result); err != nil {
+		return nil, err
+	}
+
+	var daily []data.DailyStat
+
+	for _, day := range result.Data {
+		daily = append(daily, data.DailyStat{
+			Date:         day.Range.Date,
+			TotalSeconds: day.GrandTotal.TotalSeconds,
+			Projects:     day.Projects,
+			Editors:      day.Editors,
+			Languages:    day.Languages,
+		})
+	}
+
+	return daily, nil
 }

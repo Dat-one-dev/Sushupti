@@ -2,6 +2,7 @@ package utils
 
 import (
 	"fmt"
+	"time"
 
 	"github.com/Dat-one-dev/Sushupti/data"
 )
@@ -186,4 +187,23 @@ func ProgBar(value, max, width, limit int) string {
 		return "-"
 	}
 	return result
+}
+
+func DateRange() (string, string, error) {
+	today := time.Now()
+
+	start := today.AddDate(0, 0, -10).Format("02-01-06")
+	end := today.Format("02-01-06")
+
+	startDate, err := ParseTime(start)
+	if err != nil {
+		return "", "", err
+	}
+
+	endDate, err := ParseTime(end)
+	if err != nil {
+		return "", "", err
+	}
+
+	return startDate, endDate, nil
 }

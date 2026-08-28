@@ -85,22 +85,22 @@ func ExportGraph(dailyStat []data.DailyStat, filename string, darkMode bool) err
 
 	//font
 	fontBytes, err := os.ReadFile("assets/font.ttf")
-	if !logError(err) {
+	if !LogError(err) {
 		return err
 	}
 
 	fontData, err := opentype.Parse(fontBytes)
-	if !logError(err) {
+	if !LogError(err) {
 		return err
 	}
 
 	fontBytes2, err := os.ReadFile("assets/font3.otf")
-	if !logError(err) {
+	if !LogError(err) {
 		return err
 	}
 
 	fontData2, err := opentype.Parse(fontBytes2)
-	if !logError(err) {
+	if !LogError(err) {
 		return err
 	}
 
@@ -199,7 +199,7 @@ func ExportGraph(dailyStat []data.DailyStat, filename string, darkMode bool) err
 		)
 	}
 	file, err := os.Create(filename)
-	if !logError(err) {
+	if !LogError(err) {
 		return nil
 	}
 	defer file.Close()
