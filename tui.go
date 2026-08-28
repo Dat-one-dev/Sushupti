@@ -25,12 +25,36 @@ type model struct {
 type tickMsg struct{}
 
 func (m model) Init() tea.Cmd {
-	return tick()
+	return tea.Batch(
+		tick(),
+		refresh(),
+	)
 }
 
 func tick() tea.Cmd {
 	return tea.Tick(150*time.Millisecond, func(t time.Time) tea.Msg {
 		return tickMsg{}
+	})
+}
+
+func refresh() tea.Cmd {
+	return tea.Tick(1*time.Minute, func(t time.Time) tea.Msg {
+		start, end, err := utils.DateRange()
+		if err != nil {
+			return nil
+		}
+
+		config, err := utils.LoadConfig(start, end)
+		if err != nil {
+			return nil
+		}
+
+		daily, err := utils.FetchDaily(config)
+		if err != nil {
+			return nil
+		}
+
+		return refreshMsg(daily)
 	})
 }
 
@@ -49,6 +73,11 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	if _, ok := msg.(tickMsg); ok {
 		m.tick()
 		return m, tick()
+	}
+
+	if msg, ok := msg.(refreshMsg); ok {
+		m.daily = msg
+		return m, refresh()
 	}
 
 	return m, nil

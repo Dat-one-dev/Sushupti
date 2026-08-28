@@ -1,9 +1,12 @@
 package main
 
 import (
+	"github.com/Dat-one-dev/Sushupti/data"
 	"github.com/Dat-one-dev/Sushupti/utils"
 	tea "github.com/charmbracelet/bubbletea"
 )
+
+type refreshMsg []data.DailyStat
 
 func main() {
 	start, end, err := utils.DateRange()
