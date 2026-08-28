@@ -33,7 +33,7 @@ func RenderCat(frame int) []string {
 			"  ^~^   ,        ",
 			" (`Y`) )         ",
 			" /   \\/          ",
-			"(\\|||/)          ",
+			"(\\| |/)          ",
 		},
 		{
 			"    HACK CAT     ",
@@ -69,7 +69,7 @@ func RenderCat(frame int) []string {
 			"  ^~^ ,          ",
 			" ('Y') )         ",
 			" /   \\/          ",
-			"(\\|||/)          ",
+			"(\\| |/)          ",
 		},
 		{
 			"    HACK CAT     ",
@@ -92,4 +92,7 @@ func RenderCat(frame int) []string {
 	}
 
 	return cats[frame%len(cats)]
+}
+func CatWidth() int {
+	return len("    HACK CAT     ")
 }

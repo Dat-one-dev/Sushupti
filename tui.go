@@ -19,6 +19,8 @@ type model struct {
 	symb      string
 	symbColor string
 	symbframe int
+	catPos    int
+	catDir    int
 }
 
 type tickMsg struct{}
@@ -64,6 +66,29 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		case 3:
 			m.symb = "╱"
 			m.symbColor = "1"
+		}
+
+		// CAT MOVEMENT
+		catWidth := tui.CatWidth()
+		sidebarWidth := 24
+		maxPos := sidebarWidth - catWidth
+		if maxPos < 0 {
+			maxPos = 0
+		}
+
+		if m.catDir == 0 {
+			m.catDir = 1
+		}
+
+		m.catPos += m.catDir
+
+		if m.catPos >= maxPos {
+			m.catPos = maxPos
+			m.catDir = -1
+		}
+		if m.catPos <= 0 {
+			m.catPos = 0
+			m.catDir = 1
 		}
 
 		return m, tick()
@@ -117,20 +142,27 @@ func (m model) View() string {
 	overviewBox := utils.Box(tui.RenderOverview(m.daily, m.anim), boxWidth)
 	leaderboardBox := utils.Box(tui.RenderLeaderboard(m.daily), boxWidth)
 	projectsBox := utils.Box(tui.RenderProjects(m.daily), boxWidth)
-	languagesBox := utils.Box(tui.ProjectBar(m.daily, boxWidth, m.anim), boxWidth)
+	languagesBox := utils.Box(tui.ProjectBar(m.daily, boxWidth, m.anim*2), boxWidth)
+	dateBox := utils.Box(tui.RenderDate(), boxWidth)
 	sidebarBox := utils.Box(tui.RenderSidebar(m.daily, m.symb), sidebarWidth)
+	clockBox := utils.Box(tui.RenderClock(), boxWidth)
 
 	rightC := leaderboardBox + "\n" +
 		projectsBox + "\n" +
-		languagesBox
+		languagesBox + "\n" +
+		dateBox
+
+	leftC := overviewBox + "\n" + clockBox
 
 	cat := tui.RenderCat(m.symbframe)
 	// SIDEBAR + DASHBOARD
-	dashboard := utils.JoinBoxes(overviewBox, rightC)
+	dashboard := utils.JoinBoxes(leftC, rightC)
 	sidebarLines := strings.Split(sidebarBox, "\n")
 	dashboardLines := strings.Split(dashboard, "\n")
 	catlines := cat
 	height := m.h - 2
+
+	catWidth := tui.CatWidth()
 
 	var s strings.Builder
 
@@ -145,15 +177,20 @@ func (m model) View() string {
 			s.WriteString(sidebarLines[i])
 		} else {
 			// CAT
-			// CAT
 			catStart := height - len(catlines)
 			catIndex := i - catStart
 
 			if catIndex >= 0 && catIndex < len(catlines) {
 				catLine := catlines[catIndex]
 
-				catWidth := lipgloss.Width(catLine)
-				leftPadding := (sidebarWidth - catWidth) / 2
+				leftPadding := m.catPos
+				maxLeft := sidebarWidth - catWidth
+				if leftPadding > maxLeft {
+					leftPadding = maxLeft
+				}
+				if leftPadding < 0 {
+					leftPadding = 0
+				}
 
 				s.WriteString(strings.Repeat(" ", leftPadding))
 				s.WriteString(catLine)
@@ -187,7 +224,7 @@ func (m model) View() string {
 	}
 
 	quitText := lipgloss.NewStyle().Foreground(lipgloss.Color("8")).Render(" q/ctrl+c to quit")
-	brdw := m.w - lipgloss.Width(quitText) - 2 //sometime my variable name are so I lwk start regeretting my life choices....lets see if anyone in future finds this repo then does he know what bdrw means....ig if i see this code after 7-8 months i will forget it
+	brdw := m.w - lipgloss.Width(quitText) - 2
 	s.WriteString("╰")
 	s.WriteString(strings.Repeat("─", brdw/2))
 	s.WriteString(quitText)
