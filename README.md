@@ -18,9 +18,10 @@
 
 Sushupti is a **TUI (Terminal User Interface)** for Hackatime.
 
-It pulls your coding activity from Hackatime and turns it into a dashboard that you can open directly in your terminal.
+It pulls your coding activity from Hackatime and turns it into a dashboard that you can open directly in your terminal/cmd
 
-Instead of opening a browser just to check your coding statistics, Sushupti gives you things like:
+Instead of opening a browser just to check your coding statistics, Sushupti has fllowing features
+:
 
 * total coding time
 * active days
@@ -36,7 +37,7 @@ Instead of opening a browser just to check your coding statistics, Sushupti give
 
 And yes, there is also a tiny animated cat.
 
-Because an empty terminal corner looked wrong...
+Dont ask me why i even added that cat...idk myself just felt cool lol
 
 ---
 
@@ -44,19 +45,15 @@ Because an empty terminal corner looked wrong...
 
 The original idea was much smaller.
 
-I wanted to look at my Hackatime activity and see **how much I coded each day in a graph**.
+I wanted to look at my Hackatime activity and see how much I coded each day in a graph.
 
-Hackatime already had the data, but I wanted something that felt natural to use from a terminal.
+So I made a tool that prints graph in terminal
 
-I'm a Linux user. If I'm already sitting in a terminal writing code, opening a browser just to check my coding statistics feels like an unnecessary context switch.
+Felt useless made a tool that exports graph as PNG
 
-So I started building a tiny Go CLI that fetched Hackatime data and printed a daily graph.
+Felt more useless so I made what you see now
 
-Then I made a PNG exporter.
-
-Then I added a proper TUI.
-
-Then I kept adding things.
+Im a Linux user. If I'm already sitting in a terminal writing code, opening a browser just to check my coding statistics feels like an unnecessary context switch to me lwk
 
 And somehow the small graph program became Sushupti.
 
@@ -75,22 +72,20 @@ Sushupti calculates useful statistics from your coding activity:
 * **Daily activity**
 * **Project totals**
 
+(All are in utils/stats) (TALKING OF MATH FUNCS NOT THE UI)
+
 ### Project Analytics
 
-See where your coding time actually went.
-
-Sushupti includes:
+It also has:
 
 * project leaderboard
 * project time distribution
 * most-used project
 * percentage of total coding time spent on projects
 
-The project graph also uses the same project colours shown in the leaderboard, so you can tell what you're looking at without guessing.
+The project graph also uses the same project colours shown in the leaderboard, so you can tell what you're looking at (atp i believe that i can make a bug into feature).
 
-### Live Dashboard
-
-The dashboard isn't just static text.
+### Live Dashboard (this is latest thing was supposed to be added early)
 
 It includes:
 
@@ -101,6 +96,8 @@ It includes:
 * animated terminal elements
 * keyboard-driven navigation
 
+[NOTE: FOR SOME REASON ON TERMUX THE CLOCK SHOWS TIME OF THIS AFRICAN PLACE DAKAR IDK THE REASON THID IS ANDROID ONLY BUG]
+
 ### The Cat
 
 There is a cat.
@@ -110,6 +107,8 @@ It started because there was an empty space in the interface.
 Then I spent way too much time animating it.
 
 It now moves across the sidebar.
+
+(CAT FRAMES ARE MADE BY AI SORRY AI GODS I CANT MAKE THOSE MYSELF I TRIED TRUST Me
 
 ---
 
@@ -135,17 +134,13 @@ The TUI is built using:
 * **Go-Figure** — large terminal text
 * **Hackatime API** — coding activity data
 
-The project started as a small CLI and gradually grew into a full terminal application.
-
 ---
 
 # Installation
 
-Sushupti provides pre-built releases, so you **do not need Go or a compiler** to install it.
-
 You only need:
 
-* Hackatime
+* Hackatime (REQUIRED IF YOU DONT HAVE Hackatime CLI DONT USE THIS)
 * a terminal
 
 Sushupti reads your Hackatime/WakaTime configuration from:
@@ -186,8 +181,6 @@ Then:
 sushupti
 ```
 
-The installer automatically detects **Intel** and **Apple Silicon** Macs.
-
 ## Termux
 
 Run:
@@ -221,42 +214,7 @@ Sushupti.exe
 
 [Download Sushupti from GitHub Releases](https://github.com/Dat-one-dev/Sushupti/releases/latest)
 
-No Go installation or building from source is required.
-
 ---
-
-# Controls
-
-Sushupti is designed to be used entirely from the keyboard.
-
-```text
-q
-    Quit
-
-Ctrl+C
-    Quit
-```
-
----
-
-# Project Structure
-
-The project is split into a few parts instead of keeping everything inside one huge TUI file.
-
-```text
-Sushupti/
-├── data/
-├── graph/
-├── styles/
-├── utils/
-├── tui/
-├── assets/
-├── main.go
-└── README.md
-```
-
-The exact structure may change as development continues, but the goal is to keep the data processing, statistics, styling, and TUI logic separate.
-
 
 # What I Learned
 
@@ -277,30 +235,7 @@ It ended up teaching me much more about:
 
 The biggest lesson was probably that **scope creep is real**.
 
-The original idea was a tiny CLI.
-
-The final idea became a full dashboard.
-
 I changed the design more times than I probably should have, but that process taught me a lot about building interfaces instead of just writing code that technically works.
-
----
-
-# What's Next?
-
-Sushupti is close to the end of its current development cycle, but there are still things I would like to explore.
-
-Possible future improvements include:
-
-* more activity visualizations
-* better session statistics
-* additional dashboard views
-* configuration options
-* more keyboard controls
-* improved installation/distribution
-
-The goal isn't to turn Sushupti into a massive application.
-
-I want it to stay a **small, fast, terminal-first way of checking Hackatime statistics.**
 
 ---
 
@@ -308,13 +243,7 @@ I want it to stay a **small, fast, terminal-first way of checking Hackatime stat
 
 Sushupti is a Sanskrit word associated with **deep sleep**.
 
-The name was chosen because the project is meant to stay quietly in the terminal rather than constantly demanding attention.
-
-You open it when you want your statistics.
-
-You check them.
-
-Then you get back to coding.
+(3rd quater od human consiousness acc to Madnukya Upanishad)
 
 ---
 
@@ -329,10 +258,6 @@ Ideas for new statistics and dashboard components are especially welcome.
 # Author
 
 Built by **Dat-One-Dev**.
-
-I originally wanted a simple graph.
-
-I accidentally built a TUI.
 
 ```text
 ┌─────────────────────────────────────────────┐
