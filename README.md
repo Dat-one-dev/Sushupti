@@ -1,7 +1,7 @@
 # Sushupti
 
 <p>
-    <img src="assets/Screenshot.png" width="800" alt="Sushupti dashboard">
+    <img src="assets/demo.gif" width="800" alt="Sushupti dashboard">
 </p>
 
 A terminal dashboard for your Hackatime coding activity.
