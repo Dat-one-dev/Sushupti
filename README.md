@@ -9,7 +9,7 @@
 </p>
 
 <p align="center">
-  <i>Because sometimes opening a browser just to check how much you coded feels unnecessary.</i>
+  <i>Because I hate browsers</i>
 </p>
 
 ---
@@ -36,7 +36,7 @@ Instead of opening a browser just to check your coding statistics, Sushupti give
 
 And yes, there is also a tiny animated cat.
 
-Because an empty terminal corner looked wrong.
+Because an empty terminal corner looked wrong...
 
 ---
 
@@ -191,9 +191,6 @@ Then:
 Sushupti is designed to be used entirely from the keyboard.
 
 ```text
-← / →
-    Switch dashboard views
-
 q
     Quit
 
@@ -221,91 +218,6 @@ Sushupti/
 
 The exact structure may change as development continues, but the goal is to keep the data processing, statistics, styling, and TUI logic separate.
 
----
-
-# A Little Bit of History
-
-Sushupti did not start as the application you see now.
-
-### 01 — The original idea
-
-The first version was basically:
-
-> Get Hackatime data → calculate daily hours → print a graph.
-
-It was a simple CLI.
-
----
-
-### 02 — The graph exporter
-
-I then added the ability to generate a graph as an image.
-
-At this point Sushupti was still mostly a statistics/graph tool.
-
----
-
-### 03 — The TUI happened
-
-Then I decided that a terminal application would be more interesting than a command that just prints a graph.
-
-This was where the project scope completely escaped.
-
-I started learning Bubble Tea and building an actual dashboard.
-
----
-
-### 04 — The interface evolved
-
-The TUI went through several iterations.
-
-I experimented with:
-
-* sidebars
-* dashboard layouts
-* borders
-* animated graphs
-* different terminal symbols
-* project leaderboards
-* statistics boxes
-
-Eventually the original sidebar was removed and replaced with something that was actually useful for daily statistics.
-
----
-
-### 05 — More data
-
-I added project analytics and started turning the dashboard into something that could actually tell me where my coding time was going.
-
-The project leaderboard and project distribution graph became some of the more complicated parts of the interface.
-
----
-
-### 06 — Making it less terrible
-
-At one point, the codebase had become a mess.
-
-So I spent a large amount of time cleaning up the TUI, styles, utilities, and statistics calculations.
-
-Some statistics that were being calculated repeatedly during rendering were moved into reusable functions.
-
-This also made adding new dashboard components much easier.
-
----
-
-### 07 — Making it feel alive
-
-The graphs started animating when the application launches.
-
-The header got an animated element.
-
-The cat started moving.
-
-A clock and date display were added.
-
-At this point Sushupti stopped feeling like a collection of terminal boxes and started feeling like an actual application.
-
----
 
 # What I Learned
 
