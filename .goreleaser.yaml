@@ -13,6 +13,7 @@ builds:
 archives:
   - formats:
       - tar.gz
+    name_template: "Sushupti_{{ .Os }}_{{ .Arch }}"
 
 checksum:
   name_template: "checksums.txt"
