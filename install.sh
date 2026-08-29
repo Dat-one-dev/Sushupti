@@ -22,7 +22,7 @@ esac
 
 VERSION=$(curl -s https://api.github.com/repos/$REPO/releases/latest | grep '"tag_name"' | cut -d '"' -f 4 | sed 's/^v//')
 
-URL="https://github.com/$REPO/releases/download/$VERSION/Sushupti_${OS}_${ARCH}.tar.gz"
+URL="https://github.com/$REPO/releases/download/v$VERSION/Sushupti_${VERSION}_${OS}_${ARCH}.tar.gz"
 
 mkdir -p "$INSTALL_DIR"
 
