@@ -9,18 +9,18 @@ OS=$(uname -s)
 ARCH=$(uname -m)
 
 case "$OS" in
-    Linux) OS="Linux" ;;
-    Darwin) OS="Darwin" ;;
+    Linux) OS="linux" ;;
+    Darwin) OS="darwin" ;;
     *) echo "Unsupported OS: $OS"; exit 1 ;;
 esac
 
 case "$ARCH" in
-    x86_64) ARCH="x86_64" ;;
+    x86_64) ARCH="amd64" ;;
     aarch64|arm64) ARCH="arm64" ;;
     *) echo "Unsupported architecture: $ARCH"; exit 1 ;;
 esac
 
-VERSION=$(curl -s https://api.github.com/repos/$REPO/releases/latest | grep '"tag_name"' | cut -d '"' -f 4)
+VERSION=$(curl -s https://api.github.com/repos/$REPO/releases/latest | grep '"tag_name"' | cut -d '"' -f 4 | sed 's/^v//')
 
 URL="https://github.com/$REPO/releases/download/$VERSION/Sushupti_${OS}_${ARCH}.tar.gz"
 
