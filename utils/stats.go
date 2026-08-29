@@ -10,7 +10,7 @@ import (
 func TotalTime(daily []data.DailyStat) int {
 	total := 0
 	for _, day := range daily {
-		total += day.TotalSeconds
+		total += int(day.TotalSeconds)
 	}
 
 	return total
@@ -49,16 +49,16 @@ func MostUsedProject(daily []data.DailyStat) data.Project {
 
 	for _, day := range daily {
 		for _, project := range day.Projects {
-			projects[project.ProjectName] += project.TotalSeconds
+			projects[project.ProjectName] += int(project.TotalSeconds)
 		}
 	}
 
 	var most data.Project
 
 	for name, seconds := range projects {
-		if seconds > most.TotalSeconds {
+		if seconds > int(most.TotalSeconds) {
 			most.ProjectName = name
-			most.TotalSeconds = seconds
+			most.TotalSeconds = float64(seconds)
 		}
 	}
 
@@ -98,7 +98,7 @@ func ProjectTotalTime(daily []data.DailyStat, projectName string) int {
 	for _, day := range daily {
 		for _, project := range day.Projects {
 			if project.ProjectName == projectName {
-				total += project.TotalSeconds
+				total += int(project.TotalSeconds)
 			}
 		}
 	}
@@ -109,7 +109,7 @@ func ProjectTotalTime(daily []data.DailyStat, projectName string) int {
 func ProjectShareCalc(daily []data.DailyStat, projectTime int) float64 {
 	total := 0
 	for _, day := range daily {
-		total += day.TotalSeconds
+		total += int(day.TotalSeconds)
 	}
 
 	share := 0.0

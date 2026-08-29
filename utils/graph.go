@@ -39,22 +39,22 @@ func DrawText(img *image.RGBA, text string, x, y, size float64, fontData *openty
 func Graph(dailyStats []data.DailyStat) {
 	maxSec := 0
 	for _, stat := range dailyStats {
-		if stat.TotalSeconds > maxSec {
-			maxSec = stat.TotalSeconds
+		if int(stat.TotalSeconds) > maxSec {
+			maxSec = int(stat.TotalSeconds)
 		}
 	}
 
 	for _, stat := range dailyStats {
 		barLength := 0
 		if maxSec > 0 {
-			barLength = stat.TotalSeconds * 30 / maxSec
+			barLength = int(stat.TotalSeconds) * 30 / maxSec
 		}
 		bar := ""
 		for i := 0; i < barLength; i++ {
 			bar += "█"
 		}
-		hours := stat.TotalSeconds / 3600
-		min := (stat.TotalSeconds % 3600) / 60
+		hours := int(stat.TotalSeconds) / 3600
+		min := (int(stat.TotalSeconds) % 3600) / 60
 
 		fmt.Printf("%s | %-30s %dh %02dm\n", stat.Date, bar, hours, min)
 	}
@@ -113,8 +113,8 @@ func ExportGraph(dailyStat []data.DailyStat, filename string, darkMode bool) err
 	DrawText(img, "Daily Coding Activity", 400, 80, 24, fontData, textColor)
 
 	for _, stat := range dailyStat {
-		if stat.TotalSeconds > maxSec {
-			maxSec = stat.TotalSeconds
+		if int(stat.TotalSeconds) > maxSec {
+			maxSec = int(stat.TotalSeconds)
 		}
 	}
 
@@ -157,7 +157,7 @@ func ExportGraph(dailyStat []data.DailyStat, filename string, darkMode bool) err
 			continue
 		}
 
-		currentWidth := stat.TotalSeconds * barWidth / maxSec
+		currentWidth := int(stat.TotalSeconds) * barWidth / maxSec
 		y := top + i*(barHeight+gap)
 		DrawText(
 			img,

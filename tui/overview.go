@@ -14,7 +14,7 @@ func RenderOverview(daily []data.DailyStat, anim int) []string {
 	bestDay := utils.BestDay(daily)
 	dailyAverage := utils.DailyAvg(daily)
 	total := utils.TotalTime(daily)
-	maxSec := bestDay.TotalSeconds
+	maxSec := int(bestDay.TotalSeconds)
 
 	//contetblcok
 	content := []string{
@@ -25,7 +25,7 @@ func RenderOverview(daily []data.DailyStat, anim int) []string {
 	}
 
 	if bestDay.TotalSeconds > 0 {
-		content = append(content, "Best Day    "+style.Value.Render(bestDay.Date[5:])+"  "+style.Value.Render(utils.FormatTime(bestDay.TotalSeconds)))
+		content = append(content, "Best Day    "+style.Value.Render(bestDay.Date[5:])+"  "+style.Value.Render(utils.FormatTime(int(bestDay.TotalSeconds))))
 	} else {
 		content = append(content, "Best Day    "+style.Value.Render("No data"))
 	}
@@ -35,13 +35,13 @@ func RenderOverview(daily []data.DailyStat, anim int) []string {
 	for _, day := range daily {
 		line := day.Date[5:] + "  "
 		line += style.Value.Render(utils.ProgBar(
-			day.TotalSeconds,
+			int(day.TotalSeconds),
 			maxSec,
 			20,
 			anim,
 		))
 
-		line += "  " + utils.FormatTime(day.TotalSeconds)
+		line += "  " + utils.FormatTime(int(day.TotalSeconds))
 		content = append(content, line)
 	}
 

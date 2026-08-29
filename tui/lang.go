@@ -24,7 +24,7 @@ func ProjectBar(daily []data.DailyStat, width, anim int) []string {
 	}
 
 	for i, project := range projects {
-		size := project.TotalSeconds * width / total
+		size := int(project.TotalSeconds) * width / total
 
 		for j := 0; j < size; j++ {
 			if len(layout) >= width {

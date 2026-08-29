@@ -10,7 +10,7 @@ type Response struct {
 }
 
 type Project struct {
-	TotalSeconds int     `json:"total_seconds"`
+	TotalSeconds float64 `json:"total_seconds"`
 	ProjectName  string  `json:"name"`
 	Percent      float64 `json:"percent"`
 }
@@ -20,21 +20,21 @@ type DailyStat struct {
 	Projects     []Project
 	Editors      []Category
 	Languages    []Category
-	TotalSeconds int
+	TotalSeconds float64
 }
 
 type Category struct {
 	Name         string  `json:"name"`
-	TotalSeconds int     `json:"total_seconds"`
+	TotalSeconds float64 `json:"total_seconds"`
 	Percent      float64 `json:"percent"`
 }
 
 type Day struct {
 	GrandTotal struct {
-		TotalSeconds int `json:"total_seconds"`
-		Hours        int `json:"hours"`
-		Minutes      int `json:"minutes"`
-		Seconds      int `json:"seconds"`
+		TotalSeconds float64 `json:"total_seconds"`
+		Hours        float64 `json:"hours"`
+		Minutes      float64 `json:"minutes"`
+		Seconds      float64 `json:"seconds"`
 	} `json:"grand_total"`
 
 	Editors   []Category `json:"editors"`

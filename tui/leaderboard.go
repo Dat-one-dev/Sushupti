@@ -21,7 +21,7 @@ func RenderLeaderboard(daily []data.DailyStat) []string {
 			"%d. %-20s %s",
 			i+1,
 			project.ProjectName,
-			utils.FormatTime(project.TotalSeconds),
+			utils.FormatTime(int(project.TotalSeconds)),
 		)
 
 		content = append(content,

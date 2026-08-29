@@ -13,7 +13,7 @@ func RenderSidebar(daily []data.DailyStat, symb string) []string {
 	today := 0
 
 	if len(daily) > 0 {
-		today = daily[len(daily)-1].TotalSeconds
+		today = int(daily[len(daily)-1].TotalSeconds)
 	}
 
 	content := []string{
