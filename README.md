@@ -139,11 +139,12 @@ The project started as a small CLI and gradually grew into a full terminal appli
 
 ---
 
-# Requirements
+# Installation
 
-You need:
+Sushupti provides pre-built releases, so you **do not need Go or a compiler** to install it.
 
-* Go
+You only need:
+
 * Hackatime
 * a terminal
 
@@ -155,34 +156,72 @@ Sushupti reads your Hackatime/WakaTime configuration from:
 
 Your Hackatime API configuration needs to be available there before running Sushupti.
 
----
+## Linux
 
-# Running Sushupti
-
-Clone the repository:
+Run:
 
 ```bash
-git clone https://github.com/Dat-one-dev/Sushupti.git
-cd Sushupti
-```
-
-Run it:
-
-```bash
-go run .
-```
-
-Or build it:
-
-```bash
-go build
+curl -fsSL https://raw.githubusercontent.com/Dat-one-dev/Sushupti/main/install.sh | sh
 ```
 
 Then:
 
 ```bash
-./Sushupti
+sushupti
 ```
+
+The installer automatically detects whether you're using **amd64** or **arm64**.
+
+## macOS
+
+Run:
+
+```bash
+curl -fsSL https://raw.githubusercontent.com/Dat-one-dev/Sushupti/main/install.sh | sh
+```
+
+Then:
+
+```bash
+sushupti
+```
+
+The installer automatically detects **Intel** and **Apple Silicon** Macs.
+
+## Termux
+
+Run:
+
+```bash
+curl -fsSL https://raw.githubusercontent.com/Dat-one-dev/Sushupti/main/install.sh | sh
+```
+
+Then:
+
+```bash
+sushupti
+```
+
+> Make sure `curl` is installed in Termux first.
+
+## Windows
+
+Download the appropriate `.tar.gz` file from the latest GitHub release:
+
+* **Windows amd64** — `Sushupti_windows_amd64.tar.gz`
+* **Windows arm64** — `Sushupti_windows_arm64.tar.gz`
+
+Extract the archive and run:
+
+```text
+Sushupti.exe
+```
+
+### Latest Release
+
+[Download Sushupti from GitHub Releases](https://github.com/Dat-one-dev/Sushupti/releases/latest)
+
+No Go installation or building from source is required.
 
 ---
 
