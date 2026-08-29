@@ -1,37 +1,397 @@
 # Sushupti
 
-<p>
-    <img src="assets/demo.gif" width="800" alt="Sushupti dashboard">
+<p align="center">
+  <img src="assets/demo.gif" width="900" alt="Sushupti terminal dashboard">
 </p>
 
-A terminal dashboard for your Hackatime coding activity.
+<p align="center">
+  <b>A terminal dashboard for your Hackatime coding activity.</b>
+</p>
 
-Sushupti pulls your coding data from Hackatime and turns it into a small,
-live terminal dashboard with project stats, coding time, languages,
-and daily activity.
+<p align="center">
+  <i>Because sometimes opening a browser just to check how much you coded feels unnecessary.</i>
+</p>
 
-Built with Go, Bubble Tea, Lipgloss, Go-Figure
+---
 
-## What it shows
+## What is Sushupti?
 
-- Total coding time
-- Active days
-- Best coding day
-- Daily average
-- Daily activity graph
-- Most-used project
-- Project leaderboard
-- Project time distribution
-- Current date and time
-- Live status indicator
-- A tiny animated cat because why not
+Sushupti is a **TUI (Terminal User Interface)** for Hackatime.
 
-## Requirements
+It pulls your coding activity from Hackatime and turns it into a dashboard that you can open directly in your terminal.
 
-- Hackatime
-- A terminal
+Instead of opening a browser just to check your coding statistics, Sushupti gives you things like:
 
-Sushupti reads your Hackatime configuration from:
+* total coding time
+* active days
+* daily average
+* best coding day
+* daily activity graphs
+* project statistics
+* project leaderboard
+* project time distribution
+* current date and time
+* live status
+* animated UI elements
+
+And yes, there is also a tiny animated cat.
+
+Because an empty terminal corner looked wrong.
+
+---
+
+## Why did I make this?
+
+The original idea was much smaller.
+
+I wanted to look at my Hackatime activity and see **how much I coded each day in a graph**.
+
+Hackatime already had the data, but I wanted something that felt natural to use from a terminal.
+
+I'm a Linux user. If I'm already sitting in a terminal writing code, opening a browser just to check my coding statistics feels like an unnecessary context switch.
+
+So I started building a tiny Go CLI that fetched Hackatime data and printed a daily graph.
+
+Then I made a PNG exporter.
+
+Then I added a proper TUI.
+
+Then I kept adding things.
+
+And somehow the small graph program became Sushupti.
+
+---
+
+# Features
+
+### Daily Coding Statistics
+
+Sushupti calculates useful statistics from your coding activity:
+
+* **Total coding time**
+* **Active days**
+* **Daily average**
+* **Best coding day**
+* **Daily activity**
+* **Project totals**
+
+### Project Analytics
+
+See where your coding time actually went.
+
+Sushupti includes:
+
+* project leaderboard
+* project time distribution
+* most-used project
+* percentage of total coding time spent on projects
+
+The project graph also uses the same project colours shown in the leaderboard, so you can tell what you're looking at without guessing.
+
+### Live Dashboard
+
+The dashboard isn't just static text.
+
+It includes:
+
+* live clock
+* current date
+* live status indicator
+* animated graphs
+* animated terminal elements
+* keyboard-driven navigation
+
+### The Cat
+
+There is a cat.
+
+It started because there was an empty space in the interface.
+
+Then I spent way too much time animating it.
+
+It now moves across the sidebar.
+
+---
+
+# Screenshots
+
+The main dashboard:
+
+<p align="center">
+  <img src="assets/demo.gif" width="900" alt="Sushupti demo">
+</p>
+
+---
+
+# Built With
+
+Sushupti is written in **Go**.
+
+The TUI is built using:
+
+* **Go** — main language
+* **Bubble Tea** — TUI framework
+* **Lipgloss** — terminal styling
+* **Go-Figure** — large terminal text
+* **Hackatime API** — coding activity data
+
+The project started as a small CLI and gradually grew into a full terminal application.
+
+---
+
+# Requirements
+
+You need:
+
+* Go
+* Hackatime
+* a terminal
+
+Sushupti reads your Hackatime/WakaTime configuration from:
 
 ```text
 ~/.wakatime.cfg
+```
+
+Your Hackatime API configuration needs to be available there before running Sushupti.
+
+---
+
+# Running Sushupti
+
+Clone the repository:
+
+```bash
+git clone https://github.com/Dat-one-dev/Sushupti.git
+cd Sushupti
+```
+
+Run it:
+
+```bash
+go run .
+```
+
+Or build it:
+
+```bash
+go build
+```
+
+Then:
+
+```bash
+./Sushupti
+```
+
+---
+
+# Controls
+
+Sushupti is designed to be used entirely from the keyboard.
+
+```text
+← / →
+    Switch dashboard views
+
+q
+    Quit
+
+Ctrl+C
+    Quit
+```
+
+---
+
+# Project Structure
+
+The project is split into a few parts instead of keeping everything inside one huge TUI file.
+
+```text
+Sushupti/
+├── data/
+├── graph/
+├── styles/
+├── utils/
+├── tui/
+├── assets/
+├── main.go
+└── README.md
+```
+
+The exact structure may change as development continues, but the goal is to keep the data processing, statistics, styling, and TUI logic separate.
+
+---
+
+# A Little Bit of History
+
+Sushupti did not start as the application you see now.
+
+### 01 — The original idea
+
+The first version was basically:
+
+> Get Hackatime data → calculate daily hours → print a graph.
+
+It was a simple CLI.
+
+---
+
+### 02 — The graph exporter
+
+I then added the ability to generate a graph as an image.
+
+At this point Sushupti was still mostly a statistics/graph tool.
+
+---
+
+### 03 — The TUI happened
+
+Then I decided that a terminal application would be more interesting than a command that just prints a graph.
+
+This was where the project scope completely escaped.
+
+I started learning Bubble Tea and building an actual dashboard.
+
+---
+
+### 04 — The interface evolved
+
+The TUI went through several iterations.
+
+I experimented with:
+
+* sidebars
+* dashboard layouts
+* borders
+* animated graphs
+* different terminal symbols
+* project leaderboards
+* statistics boxes
+
+Eventually the original sidebar was removed and replaced with something that was actually useful for daily statistics.
+
+---
+
+### 05 — More data
+
+I added project analytics and started turning the dashboard into something that could actually tell me where my coding time was going.
+
+The project leaderboard and project distribution graph became some of the more complicated parts of the interface.
+
+---
+
+### 06 — Making it less terrible
+
+At one point, the codebase had become a mess.
+
+So I spent a large amount of time cleaning up the TUI, styles, utilities, and statistics calculations.
+
+Some statistics that were being calculated repeatedly during rendering were moved into reusable functions.
+
+This also made adding new dashboard components much easier.
+
+---
+
+### 07 — Making it feel alive
+
+The graphs started animating when the application launches.
+
+The header got an animated element.
+
+The cat started moving.
+
+A clock and date display were added.
+
+At this point Sushupti stopped feeling like a collection of terminal boxes and started feeling like an actual application.
+
+---
+
+# What I Learned
+
+This project started because I wanted a better graph.
+
+It ended up teaching me much more about:
+
+* Go
+* Bubble Tea
+* terminal rendering
+* TUI architecture
+* state-driven interfaces
+* API data handling
+* statistics
+* terminal layouts
+* UI design
+* code organization
+
+The biggest lesson was probably that **scope creep is real**.
+
+The original idea was a tiny CLI.
+
+The final idea became a full dashboard.
+
+I changed the design more times than I probably should have, but that process taught me a lot about building interfaces instead of just writing code that technically works.
+
+---
+
+# What's Next?
+
+Sushupti is close to the end of its current development cycle, but there are still things I would like to explore.
+
+Possible future improvements include:
+
+* more activity visualizations
+* better session statistics
+* additional dashboard views
+* configuration options
+* more keyboard controls
+* improved installation/distribution
+
+The goal isn't to turn Sushupti into a massive application.
+
+I want it to stay a **small, fast, terminal-first way of checking Hackatime statistics.**
+
+---
+
+# Why "Sushupti"?
+
+Sushupti is a Sanskrit word associated with **deep sleep**.
+
+The name was chosen because the project is meant to stay quietly in the terminal rather than constantly demanding attention.
+
+You open it when you want your statistics.
+
+You check them.
+
+Then you get back to coding.
+
+---
+
+# Contributing
+
+If you find a bug, have an idea, or want to improve something, feel free to open an issue or pull request.
+
+Ideas for new statistics and dashboard components are especially welcome.
+
+---
+
+# Author
+
+Built by **Dat-One-Dev**.
+
+I originally wanted a simple graph.
+
+I accidentally built a TUI.
+
+```text
+┌─────────────────────────────────────────────┐
+│                                             │
+│                  SUSHUPTI                   │
+│                                             │
+│       Hackatime, but in your terminal.     │
+│                                             │
+└─────────────────────────────────────────────┘
+```
+
+**Source:**
+https://github.com/Dat-one-dev/Sushupti
